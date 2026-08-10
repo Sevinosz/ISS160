@@ -54,6 +54,230 @@
             flex-direction: column;
             line-height: 1.5;
         }
+
+        /* Nav Bar Alignment */
+        .navbar {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0 2rem;
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: -0.025em;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        .nav-brand .logo-icon { color: var(--accent-brand); flex-shrink: 0; }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-full);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all var(--transition-fast);
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background-color: var(--bg-surface-hover);
+        }
+
+        .nav-link.active {
+            color: var(--text-primary);
+            background-color: var(--bg-surface-hover);
+            box-shadow: inset 0 0 0 1px var(--border-strong);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--status-success);
+            background: var(--status-success-bg);
+            padding: 0.4rem 0.85rem;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--status-success);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--status-success);
+            flex-shrink: 0;
+        }
+
+        /* Main View Container */
+        .view-section {
+            display: none; 
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+        .view-section.active { display: flex; }
+
+        /* KPI Alignment Grid */
+        .kpi-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            width: 100%;
+        }
+
+        .kpi-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 0.75rem;
+            transition: border-color var(--transition-fast);
+        }
+
+        .kpi-card:hover { border-color: var(--border-strong); }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .kpi-value {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        /* Workspace Grid (Kanban + Inspector Alignment) */
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 1.8fr) minmax(360px, 1fr);
+            gap: 1.5rem;
+            align-items: start;
+            width: 100%;
+        }
+
+        @media (max-width: 1100px) { .workspace { grid-template-columns: 1fr; } }
+
+        /* Generic Panels */
+        .panel {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            width: 100%;
+        }
+
+        .panel-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .panel-title { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
+        .panel-subtitle { font-size: 0.85rem; color: var(--text-secondary); }
+
+        /* Kanban Column Alignment */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1px;
+            background-color: var(--border-subtle); 
+        }
+
+        @media (max-width: 850px) { .kanban-board { grid-template-columns: 1fr; } }
+
+        .kanban-column {
+            background-color: var(--bg-surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 420px;
+        }
+
+        .column-header {
+            padding: 1rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-subtle);
+            background-color: rgba(255,255,255,0.015);
+        }
+
+        .col-danger { color: var(--status-danger); }
+        .col-warning { color: var(--status-warning); }
+        .col-success { color: var(--status-success); }
+
+        .count-badge {
+            background-color: var(--bg-surface-hover);
+            color: var(--text-primary);
+            padding: 0.15rem 0.55rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .column-body {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            flex-grow: 1;
+        }
+
+        /* Project Cards Alignment */
+        .project-card {
+            background-color: var(--bg-base);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
@@ -200,6 +424,413 @@
             grid-column: 1 / -1; 
         }
 
+        .form-group .detail-label {
+            /* Pushes the label up, forcing the input to lock to the bottom baseline */
+            margin-bottom: auto; 
+        }
+        
+        .form-control {
+            background-color: var(--bg-base);
+            border: 1px solid var(--border-strong);
+            color: var(--text-primary);
+            padding: 0.65rem 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            transition: all var(--transition-fast);
+            width: 100%;
+        }
+        
+        .form-control:focus { outline: none; border-color: var(--accent-brand); box-shadow: 0 0 0 2px var(--accent-brand-bg); }
+        textarea.form-control { resize: vertical; min-height: 80px; }
+        .form-actions { padding: 0 1.5rem 1.5rem 1.5rem; display: flex; justify-content: flex-end; }
+
+        /* RISK MATRIX ALIGNMENT */
+        .matrix-container { overflow-x: auto; padding: 0; }
+        .matrix-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; table-layout: fixed; min-width: 900px; }
+        .matrix-table th, .matrix-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border-subtle); vertical-align: middle; }
+        
+        .matrix-table th:nth-child(1), .matrix-table td:nth-child(1) { width: 15%; }
+        .matrix-table th:nth-child(2), .matrix-table td:nth-child(2) { width: 25%; }
+        .matrix-table th:nth-child(3), .matrix-table td:nth-child(3) { width: 15%; }
+        .matrix-table th:nth-child(4), .matrix-table td:nth-child(4) { width: 15%; }
+        .matrix-table th:nth-child(5), .matrix-table td:nth-child(5) { width: 30%; }
+
+        .matrix-table th { color: var(--text-secondary); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; background: rgba(255,255,255,0.015); }
+        .matrix-table tr:hover td { background-color: rgba(255,255,255,0.015); }
+        .metric-highlight { color: var(--status-danger); font-weight: 600; font-family: monospace; font-size: 0.9rem;}
+        .metric-money { color: var(--status-warning); font-family: monospace; font-size: 0.9rem; }
+
+        /* AUDIT LOG ALIGNMENT */
+        .audit-timeline { display: flex; flex-direction: column; gap: 0.75rem; padding: 1.5rem; }
+        .log-entry {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1rem 1.25rem;
+            background-color: var(--bg-base);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            border-left: 4px solid var(--accent-brand);
+        }
+        @media (max-width: 768px) { .log-entry { grid-template-columns: 1fr; gap: 0.75rem; } }
+        .log-entry.success { border-left-color: var(--status-success); }
+        .log-entry.warning { border-left-color: var(--status-warning); }
+        
+        .log-meta-col { display: flex; flex-direction: column; gap: 0.25rem; justify-content: center; }
+        .log-time { color: var(--text-secondary); font-family: monospace; font-size: 0.8rem; }
+        .log-hash { color: var(--text-tertiary); font-family: monospace; font-size: 0.7rem; }
+        .log-auth { color: var(--accent-brand); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.025em; }
+        
+        .log-details { display: flex; flex-direction: column; gap: 0.25rem; justify-content: center; }
+        .log-action { color: var(--text-primary); font-weight: 600; font-size: 0.925rem; }
+        .log-desc { color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+    <!-- Nav Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <svg class="logo-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Project Uptime
+        </div>
+        <div class="nav-links">
+            <button class="nav-link active" onclick="switchView('engine', event)">Continuity Engine</button>
+            <button class="nav-link" onclick="switchView('matrix', event)">Risk Matrix</button>
+            <button class="nav-link" onclick="switchView('audit', event)">Audit Logs</button>
+        </div>
+        <div class="status-indicator">
+            <div class="status-dot"></div>
+            Directive Active
+        </div>
+    </nav>
+
+    <!-- VIEW 1: CONTINUITY ENGINE -->
+    <main id="view-engine" class="view-section active">
+        
+        <section class="kpi-section">
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span>Frozen by Gridlock (Investigations)</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--status-danger)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div class="kpi-value" id="kpiInvestigating">0</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span>Parallel Independent Validations</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--status-warning)" stroke-width="2"><path d="M2 12h4l2-9 5 18 2-9h5"/></svg>
+                </div>
+                <div class="kpi-value" id="kpiValidating">0</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span>Cleared for Active Construction</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--status-success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div class="kpi-value" id="kpiCleared">0</div>
+            </div>
+        </section>
+
+        <section class="workspace">
+            <!-- Kanban Pipeline -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Operations Pipeline (DPWH NCR)</h2>
+                    <span class="panel-subtitle">Separation of Duties (SoD) Framework Validation Flow</span>
+                </div>
+                <div class="kanban-board">
+                    <div class="kanban-column">
+                        <div class="column-header col-danger">
+                            Administrative Freeze
+                            <span class="count-badge" id="countInv">0</span>
+                        </div>
+                        <div class="column-body" id="laneInvestigating"></div>
+                    </div>
+                    <div class="kanban-column">
+                        <div class="column-header col-warning">
+                            Parallel Validation (Active)
+                            <span class="count-badge" id="countVal">0</span>
+                        </div>
+                        <div class="column-body" id="laneValidating"></div>
+                    </div>
+                    <div class="kanban-column">
+                        <div class="column-header col-success">
+                            Cleared & Operational
+                            <span class="count-badge" id="countClr">0</span>
+                        </div>
+                        <div class="column-body" id="laneCleared"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inspector -->
+            <aside class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Infrastructure Inspector</h2>
+                    <span class="panel-subtitle">Deep-dive analysis & execution controls</span>
+                </div>
+                <div class="inspector-body" id="inspectorContent"></div>
+                <div id="inspectorActionContainer"></div>
+            </aside>
+
+            <!-- Registration Panel -->
+            <div class="panel registration-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Register New DPWH Infrastructure Protocol</h2>
+                    <span class="panel-subtitle">Inject new frameworks into the Project Uptime Continuity Engine</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="detail-label">Project Designation (Contract ID)</label>
+                        <input type="text" id="newName" class="form-control" placeholder="e.g., Mandaluyong Main Drainage Project">
+                    </div>
+                    <div class="form-group">
+                        <label class="detail-label">Geographic Zone</label>
+                        <input type="text" id="newZone" class="form-control" placeholder="e.g., NCR Central">
+                    </div>
+                    <div class="form-group">
+                        <label class="detail-label">Likeness of Destruction (Risk Hierarchy)</label>
+                        <select id="newRisk" class="form-control">
+                            <option value="Critical">Critical (Severe Urban Flood Threat)</option>
+                            <option value="High">High Risk (Riverbank Erosion)</option>
+                            <option value="Moderate">Moderate Risk (Localized Siltation)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="detail-label">Appropriated Budget (PHP)</label>
+                        <input type="text" id="newBudget" class="form-control" placeholder="₱...">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="detail-label">Structural Vulnerability & Independent Needs</label>
+                        <textarea id="newNeeds" class="form-control" placeholder="Summarize engineering dependencies and independent auditing requirements..."></textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" onclick="registerProject()">Deploy Protocol</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- VIEW 2: RISK MATRIX -->
+    <main id="view-matrix" class="view-section">
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Mass Destruction Risk Matrix</h2>
+                <span class="panel-subtitle">Vulnerability assessment decoupled from operational bottlenecks. Prioritizes resource allocation independent of investigation status.</span>
+            </div>
+            <div class="matrix-container">
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th>Hazard Likeness</th>
+                            <th>Project Designation & Zone</th>
+                            <th>Est. Population at Risk</th>
+                            <th>Est. Economic Impact (Loss)</th>
+                            <th>Vulnerability Profile / Needs</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matrixTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- VIEW 3: AUDIT LOGS -->
+    <main id="view-audit" class="view-section">
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Separation of Duties (SoD) Immutable Audit Log</h2>
+                <span class="panel-subtitle">Chronological, cryptographically hashed ledger of third-party validations, executive overrides, and operational unfreezes.</span>
+            </div>
+            <div class="audit-timeline" id="auditTimelineContainer">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let projects = [
+            {
+                id: 1,
+                name: "Navotas Coastal Dike Fortification (Phase III)",
+                zone: "NCR North (Camanava)",
+                risk: "Critical",
+                budget: "₱1,850,000,000",
+                auditor: "COA Special Audit Task Force",
+                statusCategory: "investigating",
+                statusText: "Halted by Senate Blue Ribbon Inquiry",
+                needs: "Repair of breached navigational gate and elevation of coastal seawall to prevent storm surge inundation in low-lying residential sectors.",
+                population: "315,000+",
+                economicLoss: "₱4.2 Billion / Storm"
+            },
+            {
+                id: 2,
+                name: "Pasig-Marikina River Channel Improvement Project (PMRCIP)",
+                zone: "NCR East",
+                risk: "Critical",
+                budget: "₱14,300,000,000",
+                auditor: "JICA Engineering Consultants",
+                statusCategory: "validating",
+                statusText: "Simultaneous Engineering Audit Active",
+                needs: "Dredging of 5.4M cubic meters of silt and construction of revetment walls. Independent validation running concurrently to bypass sequential freezes.",
+                population: "1.2 Million+",
+                economicLoss: "₱18.5 Billion / Storm"
+            },
+            {
+                id: 3,
+                name: "Parañaque Spillway & Subterranean Tunnel",
+                zone: "NCR South",
+                risk: "High",
+                budget: "₱6,400,000,000",
+                auditor: "Sycip Gorres Velayo (SGV) Infrastructure Advisory",
+                statusCategory: "validating",
+                statusText: "Forensic Financial Validation",
+                needs: "Subterranean boring required to drain Laguna de Bay overflow directly to Manila Bay. SGV currently validating contractor disbursement integrity.",
+                population: "850,000+",
+                economicLoss: "₱9.1 Billion / Storm"
+            },
+            {
+                id: 4,
+                name: "Mandaluyong Main Drainage Expansion (Maysilo Circle)",
+                zone: "NCR Central",
+                risk: "Moderate",
+                budget: "₱450,000,000",
+                auditor: "Arup Structural Validation Team",
+                statusCategory: "cleared",
+                statusText: "Cleared for Active Construction",
+                needs: "Installation of high-capacity interceptor pipes. Structural and financial integrity cleared by Arup; works progressing unimpeded.",
+                population: "120,000+",
+                economicLoss: "₱1.4 Billion / Storm"
+            }
+        ];
+
+        let auditLogs = [
+            { time: "2026-08-01 08:00:00", hash: "0x1a8f9b9...3c2a", auth: "SYSTEM INITIALIZATION", type: "success", action: "Continuity Engine Online", meta: "Project Uptime framework legally initialized under DPWH Emergency Directive 2026-A." },
+            { time: "2026-08-05 14:22:10", hash: "0x4b7c2d1...9e4f", auth: "DPWH SEC. VINCE DIZON", type: "warning", action: "Parallel Validation Override", meta: "JICA Engineering Consultants injected into PMRCIP Phase IV to bypass administrative freeze. Construction resumed simultaneously with independent audit." },
+            { time: "2026-08-08 09:15:44", hash: "0x9f3e1a7...5b8d", auth: "ARUP STRUCTURAL (THIRD-PARTY)", type: "success", action: "Structural Clearance Granted", meta: "Mandaluyong Main Drainage Expansion passed load-bearing and financial disbursement checks. Fully cleared." }
+        ];
+
+        let currentSelectedId = 1;
+
+        function switchView(viewName, evt) {
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            if(evt) evt.target.classList.add('active');
+
+            document.querySelectorAll('.view-section').forEach(section => section.classList.remove('active'));
+            document.getElementById(`view-${viewName}`).classList.add('active');
+
+            if(viewName === 'engine') renderEngine();
+            if(viewName === 'matrix') renderMatrix();
+            if(viewName === 'audit') renderAuditLogs();
+        }
+
+        function generateHash() {
+            return '0x' + Array.from({length: 12}, () => Math.floor(Math.random() * 16).toString(16)).join('') + '...' + Array.from({length: 4}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+        }
+
+        function getTimestamp() {
+            const now = new Date();
+            return now.toISOString().replace('T', ' ').substring(0, 19);
+        }
+
+        function renderEngine() {
+            const lanes = {
+                investigating: document.getElementById('laneInvestigating'),
+                validating: document.getElementById('laneValidating'),
+                cleared: document.getElementById('laneCleared')
+            };
+
+            Object.values(lanes).forEach(lane => lane.innerHTML = '');
+            let counts = { investigating: 0, validating: 0, cleared: 0 };
+
+            projects.forEach(p => {
+                const pillClass = p.risk === 'Critical' ? 'risk-critical' : (p.risk === 'High' ? 'risk-high' : 'risk-moderate');
+                const isSelected = p.id === currentSelectedId ? 'active' : '';
+
+                const cardHTML = `
+                    <div class="project-card ${isSelected}" onclick="selectProject(${p.id})">
+                        <div class="card-header">
+                            <span class="risk-badge ${pillClass}">${p.risk}</span>
+                            <span style="font-size: 0.65rem; color: var(--text-tertiary);">PID-${p.id}</span>
+                        </div>
+                        <div class="card-title">${p.name}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top:0.4rem;">${p.zone}</div>
+                    </div>
+                `;
+
+                lanes[p.statusCategory].innerHTML += cardHTML;
+                counts[p.statusCategory]++;
+            });
+
+            document.getElementById('countInv').innerText = counts.investigating;
+            document.getElementById('countVal').innerText = counts.validating;
+            document.getElementById('countClr').innerText = counts.cleared;
+            
+            document.getElementById('kpiInvestigating').innerText = counts.investigating;
+            document.getElementById('kpiValidating').innerText = counts.validating;
+            document.getElementById('kpiCleared').innerText = counts.cleared;
+
+            renderInspector();
+        }
+
+        function selectProject(id) {
+            currentSelectedId = id;
+            renderEngine();
+        }
+
+        function renderInspector() {
+            const contentBox = document.getElementById('inspectorContent');
+            const actionBox = document.getElementById('inspectorActionContainer');
+            const p = projects.find(item => item.id === currentSelectedId);
+
+            if (!p) return;
+
+            contentBox.innerHTML = `
+                <div class="detail-group">
+                    <span class="detail-label">Project Designation</span>
+                    <div class="detail-value" style="color: var(--accent-brand); font-weight: 600;">${p.name}</div>
+                </div>
+                <div class="detail-row-2col">
+                    <div class="detail-group">
+                        <span class="detail-label">Geographic Zone</span>
+                        <div class="detail-value">${p.zone}</div>
+                    </div>
+                    <div class="detail-group">
+                        <span class="detail-label">Appropriated Budget</span>
+                        <div class="detail-value" style="font-family: monospace;">${p.budget}</div>
+                    </div>
+                </div>
+                <div class="detail-group">
+                    <span class="detail-label">Independent Auditor / Validator</span>
+                    <div class="detail-value" style="color: #cbd5e1;">${p.auditor}</div>
+                </div>
+                <div class="detail-group">
+                    <span class="detail-label">Pipeline Status</span>
+                    <div class="detail-value" style="color: var(--status-warning); border-color: var(--status-warning-bg); font-weight: 600;">${p.statusText}</div>
+                </div>
+                <div class="detail-group">
+                    <span class="detail-label">Structural Vulnerability Profile</span>
+                    <div class="detail-value" style="font-size: 0.875rem; line-height: 1.4; display:block;">${p.needs}</div>
+                </div>
+            `;
+
+            if (p.statusCategory === 'investigating') {
+                actionBox.innerHTML = `
+                    <div class="action-area">
+                        <button class="btn btn-primary" onclick="transitionStatus(${p.id}, 'validating', 'AUTHORIZATION REQUIRED: Initiate parallel validation? This unfreezes active construction for \\n\\n[ ${p.name} ]\\n\\nwhile simultaneously engaging ${p.auditor}.')">
+                            Initiate Parallel Validation Protocol
+                        </button>
+                    </div>
+                `;
+            } else if (p.statusCategory === 'validating') {
+                actionBox.innerHTML = `
+                    <div class="action-area">
+                        <button class="btn btn-success" onclick="transitionStatus(${p.id}, 'cleared', 'AUTHORIZATION REQUIRED: Ensure ${p.auditor} has signed off on the integrity parameters for \\n\\n[ ${p.name} ].\\n\\nMark as fully cleared and operational?')">
                             Mark Cleared & Active
                         </button>
                     </div>
