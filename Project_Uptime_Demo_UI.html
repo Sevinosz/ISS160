@@ -81,9 +81,7 @@
             color: var(--text-primary);
         }
 
-        .nav-brand .logo-icon {
-            color: var(--accent-brand);
-        }
+        .nav-brand .logo-icon { color: var(--accent-brand); }
 
         .nav-links {
             display: flex;
@@ -138,7 +136,7 @@
 
         /* View Management */
         .view-section {
-            display: none; /* Hidden by default */
+            display: none; 
             flex-direction: column;
             gap: 2rem;
             max-width: 1600px;
@@ -146,10 +144,7 @@
             padding: 2rem;
             width: 100%;
         }
-
-        .view-section.active {
-            display: flex; /* Only show active view */
-        }
+        .view-section.active { display: flex; }
 
         /* KPI Section */
         .kpi-section {
@@ -169,9 +164,7 @@
             transition: transform var(--transition-fast);
         }
 
-        .kpi-card:hover {
-            border-color: var(--border-strong);
-        }
+        .kpi-card:hover { border-color: var(--border-strong); }
 
         .kpi-header {
             display: flex;
@@ -197,9 +190,7 @@
             align-items: start;
         }
 
-        @media (max-width: 1024px) {
-            .workspace { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 1024px) { .workspace { grid-template-columns: 1fr; } }
 
         /* Panels */
         .panel {
@@ -220,18 +211,10 @@
             gap: 0.25rem;
         }
 
-        .panel-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
+        .panel-title { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
+        .panel-subtitle { font-size: 0.875rem; color: var(--text-secondary); }
 
-        .panel-subtitle {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        /* Unconstrained Kanban Board */
+        /* Kanban Board */
         .kanban-board {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -407,72 +390,39 @@
         textarea.form-control { resize: vertical; min-height: 80px; }
         .form-actions { padding: 0 1.5rem 1.5rem 1.5rem; display: flex; justify-content: flex-end; }
 
-        /* RISK MATRIX SPECIFIC STYLES */
-        .matrix-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-        .matrix-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.875rem;
-        }
-        .matrix-table th, .matrix-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        .matrix-table th {
-            color: var(--text-secondary);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.05em;
-        }
-        .matrix-table tr:hover {
-            background-color: rgba(255,255,255,0.02);
-        }
+        /* RISK MATRIX STYLES */
+        .matrix-grid { overflow-x: auto; padding: 1.5rem; }
+        .matrix-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; min-width: 900px; }
+        .matrix-table th, .matrix-table td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-subtle); vertical-align: top; }
+        .matrix-table th { color: var(--text-secondary); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; background: rgba(255,255,255,0.01); }
+        .matrix-table tr:hover { background-color: rgba(255,255,255,0.02); }
+        .metric-highlight { color: var(--status-danger); font-weight: 600; font-family: monospace; font-size: 0.95rem;}
+        .metric-money { color: var(--status-warning); font-family: monospace; }
 
-        /* AUDIT LOG SPECIFIC STYLES */
-        .audit-timeline {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            padding: 1.5rem;
-        }
+        /* AUDIT LOG STYLES */
+        .audit-timeline { display: flex; flex-direction: column; gap: 1rem; padding: 1.5rem; }
         .log-entry {
-            display: flex;
+            display: grid;
+            grid-template-columns: 200px 1fr;
             gap: 1.5rem;
-            padding: 1rem;
+            padding: 1.25rem;
             background-color: var(--bg-base);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-md);
             border-left: 4px solid var(--accent-brand);
         }
+        @media (max-width: 768px) { .log-entry { grid-template-columns: 1fr; gap: 0.5rem;} }
         .log-entry.success { border-left-color: var(--status-success); }
         .log-entry.warning { border-left-color: var(--status-warning); }
         
-        .log-time {
-            color: var(--text-secondary);
-            font-family: monospace;
-            font-size: 0.85rem;
-            white-space: nowrap;
-        }
-        .log-details {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-        .log-action {
-            color: var(--text-primary);
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        .log-meta {
-            color: var(--text-tertiary);
-            font-size: 0.8rem;
-        }
+        .log-meta-col { display: flex; flex-direction: column; gap: 0.4rem; }
+        .log-time { color: var(--text-secondary); font-family: monospace; font-size: 0.85rem; }
+        .log-hash { color: var(--text-tertiary); font-family: monospace; font-size: 0.7rem; word-break: break-all; }
+        .log-auth { color: var(--accent-brand); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+        
+        .log-details { display: flex; flex-direction: column; gap: 0.4rem; }
+        .log-action { color: var(--text-primary); font-weight: 600; font-size: 1rem; }
+        .log-desc { color: var(--text-secondary); font-size: 0.875rem; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -500,21 +450,21 @@
         <section class="kpi-section">
             <div class="kpi-card">
                 <div class="kpi-header">
-                    <span>Roadblocked Projects</span>
+                    <span>Frozen by Gridlock (Investigations)</span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--status-danger)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 </div>
                 <div class="kpi-value" id="kpiInvestigating">0</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-header">
-                    <span>Parallel Validations</span>
+                    <span>Parallel Independent Validations</span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--status-warning)" stroke-width="2"><path d="M2 12h4l2-9 5 18 2-9h5"/></svg>
                 </div>
                 <div class="kpi-value" id="kpiValidating">0</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-header">
-                    <span>Cleared & Active</span>
+                    <span>Cleared for Active Construction</span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--status-success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                 </div>
                 <div class="kpi-value" id="kpiCleared">0</div>
@@ -522,31 +472,30 @@
         </section>
 
         <section class="workspace">
-            
             <!-- Kanban Pipeline -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title">Operations Pipeline</h2>
-                    <span class="panel-subtitle">Separation of Duties Validation Flow</span>
+                    <h2 class="panel-title">Operations Pipeline (DPWH NCR)</h2>
+                    <span class="panel-subtitle">Separation of Duties (SoD) Framework Validation Flow</span>
                 </div>
                 <div class="kanban-board">
                     <div class="kanban-column">
                         <div class="column-header col-danger">
-                            Investigation
+                            Administrative Freeze
                             <span class="count-badge" id="countInv">0</span>
                         </div>
                         <div class="column-body" id="laneInvestigating"></div>
                     </div>
                     <div class="kanban-column">
                         <div class="column-header col-warning">
-                            Parallel Validation
+                            Parallel Validation (Active)
                             <span class="count-badge" id="countVal">0</span>
                         </div>
                         <div class="column-body" id="laneValidating"></div>
                     </div>
                     <div class="kanban-column">
                         <div class="column-header col-success">
-                            Cleared & Active
+                            Cleared & Operational
                             <span class="count-badge" id="countClr">0</span>
                         </div>
                         <div class="column-body" id="laneCleared"></div>
@@ -557,7 +506,7 @@
             <!-- Inspector -->
             <aside class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title">Project Inspector</h2>
+                    <h2 class="panel-title">Infrastructure Inspector</h2>
                     <span class="panel-subtitle">Deep-dive analysis & execution controls</span>
                 </div>
                 <div class="inspector-body" id="inspectorContent"></div>
@@ -567,33 +516,33 @@
             <!-- Registration Panel -->
             <div class="panel registration-panel">
                 <div class="panel-header">
-                    <h2 class="panel-title">Register New Infrastructure Protocol</h2>
-                    <span class="panel-subtitle">Inject new DPWH frameworks into the Uptime engine</span>
+                    <h2 class="panel-title">Register New DPWH Infrastructure Protocol</h2>
+                    <span class="panel-subtitle">Inject new frameworks into the Project Uptime Continuity Engine</span>
                 </div>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label class="detail-label">Designation</label>
-                        <input type="text" id="newName" class="form-control" placeholder="e.g., Pasig Embankment">
+                        <label class="detail-label">Project Designation (Contract ID)</label>
+                        <input type="text" id="newName" class="form-control" placeholder="e.g., Mandaluyong Main Drainage Project">
                     </div>
                     <div class="form-group">
-                        <label class="detail-label">Zone</label>
-                        <input type="text" id="newZone" class="form-control" placeholder="e.g., East Sector">
+                        <label class="detail-label">Geographic Zone</label>
+                        <input type="text" id="newZone" class="form-control" placeholder="e.g., NCR Central">
                     </div>
                     <div class="form-group">
-                        <label class="detail-label">Risk Hierarchy</label>
+                        <label class="detail-label">Likeness of Destruction (Risk Hierarchy)</label>
                         <select id="newRisk" class="form-control">
-                            <option value="Critical">Critical (Severe Flood Threat)</option>
-                            <option value="High">High Risk</option>
-                            <option value="Moderate">Moderate Risk</option>
+                            <option value="Critical">Critical (Severe Urban Flood Threat)</option>
+                            <option value="High">High Risk (Riverbank Erosion)</option>
+                            <option value="Moderate">Moderate Risk (Localized Siltation)</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="detail-label">Budget (PHP)</label>
+                        <label class="detail-label">Appropriated Budget (PHP)</label>
                         <input type="text" id="newBudget" class="form-control" placeholder="₱...">
                     </div>
                     <div class="form-group full-width">
-                        <label class="detail-label">Infrastructure Needs & Vulnerability Profile</label>
-                        <textarea id="newNeeds" class="form-control" placeholder="Summarize dependencies and structural vulnerabilities..."></textarea>
+                        <label class="detail-label">Structural Vulnerability & Independent Needs</label>
+                        <textarea id="newNeeds" class="form-control" placeholder="Summarize engineering dependencies and independent auditing requirements..."></textarea>
                     </div>
                 </div>
                 <div class="form-actions">
@@ -614,14 +563,15 @@
                 <table class="matrix-table">
                     <thead>
                         <tr>
-                            <th>Likeness of Destruction</th>
-                            <th>Project Designation</th>
-                            <th>Vulnerability Profile</th>
-                            <th>Allocated Budget</th>
+                            <th>Hazard Likeness</th>
+                            <th>Project Designation & Zone</th>
+                            <th>Est. Population at Risk</th>
+                            <th>Est. Economic Impact (Loss)</th>
+                            <th>Vulnerability Profile / Needs</th>
                         </tr>
                     </thead>
                     <tbody id="matrixTableBody">
-                        <!-- Populated by JS to avoid redundancy -->
+                        <!-- Populated by JS -->
                     </tbody>
                 </table>
             </div>
@@ -633,7 +583,7 @@
         <div class="panel">
             <div class="panel-header">
                 <h2 class="panel-title">Separation of Duties (SoD) Immutable Audit Log</h2>
-                <span class="panel-subtitle">Chronological ledger of third-party validations, executive overrides, and system unfreezes.</span>
+                <span class="panel-subtitle">Chronological, cryptographically hashed ledger of third-party validations, executive overrides, and operational unfreezes.</span>
             </div>
             <div class="audit-timeline" id="auditTimelineContainer">
                 <!-- Populated by JS -->
@@ -642,68 +592,93 @@
     </main>
 
     <script>
-        // Data State
+        // Legitimate, semantic Metro Manila context data
         let projects = [
             {
                 id: 1,
-                name: "Manggahan Floodway Expansion",
-                zone: "Central Metro Manila",
+                name: "Navotas Coastal Dike Fortification (Phase III)",
+                zone: "NCR North (Camanava)",
                 risk: "Critical",
-                budget: "₱1,200,000,000",
-                auditor: "Consortium A (Forensic)",
+                budget: "₱1,850,000,000",
+                auditor: "COA Special Audit Task Force",
                 statusCategory: "investigating",
-                statusText: "Roadblocked by Inquiry",
-                needs: "Urgent dredging asset deployment and structural wall reinforcement required to prevent massive regional overflow."
+                statusText: "Halted by Senate Blue Ribbon Inquiry",
+                needs: "Repair of breached navigational gate and elevation of coastal seawall to prevent storm surge inundation in low-lying residential sectors.",
+                population: "315,000+",
+                economicLoss: "₱4.2 Billion / Storm"
             },
             {
                 id: 2,
-                name: "Tullahan River Catchment Upgrades",
-                zone: "North Metro Manila",
+                name: "Pasig-Marikina River Channel Improvement Project (PMRCIP)",
+                zone: "NCR East",
                 risk: "Critical",
-                budget: "₱850,000,000",
-                auditor: "Consortium B (Civil Group)",
+                budget: "₱14,300,000,000",
+                auditor: "JICA Engineering Consultants",
                 statusCategory: "validating",
-                statusText: "Third-Party Audit Active",
-                needs: "Immediate bottleneck clearance and channel widening to sustain baseline flow."
+                statusText: "Simultaneous Engineering Audit Active",
+                needs: "Dredging of 5.4M cubic meters of silt and construction of revetment walls. Independent validation running concurrently to bypass sequential freezes.",
+                population: "1.2 Million+",
+                economicLoss: "₱18.5 Billion / Storm"
             },
             {
                 id: 3,
-                name: "Marikina Riverbank Phase II",
-                zone: "East Metro Manila",
+                name: "Parañaque Spillway & Subterranean Tunnel",
+                zone: "NCR South",
                 risk: "High",
-                budget: "₱600,000,000",
-                auditor: "Consortium C (Compliance)",
+                budget: "₱6,400,000,000",
+                auditor: "Sycip Gorres Velayo (SGV) Infrastructure Advisory",
+                statusCategory: "validating",
+                statusText: "Forensic Financial Validation",
+                needs: "Subterranean boring required to drain Laguna de Bay overflow directly to Manila Bay. SGV currently validating contractor disbursement integrity.",
+                population: "850,000+",
+                economicLoss: "₱9.1 Billion / Storm"
+            },
+            {
+                id: 4,
+                name: "Mandaluyong Main Drainage Expansion (Maysilo Circle)",
+                zone: "NCR Central",
+                risk: "Moderate",
+                budget: "₱450,000,000",
+                auditor: "Arup Structural Validation Team",
                 statusCategory: "cleared",
-                statusText: "Financial Validation",
-                needs: "Riverbank stabilization, sensor integration, and parallel financial tracking."
+                statusText: "Cleared for Active Construction",
+                needs: "Installation of high-capacity interceptor pipes. Structural and financial integrity cleared by Arup; works progressing unimpeded.",
+                population: "120,000+",
+                economicLoss: "₱1.4 Billion / Storm"
             }
         ];
 
         let auditLogs = [
-            { time: "2026-08-10 09:15:00", type: "success", action: "Framework Initialization", meta: "Project Uptime Continuity Engine brought online." },
-            { time: "2026-08-10 10:30:22", type: "warning", action: "Third-Party Override Initiated", meta: "Consortium B commenced parallel validation on Tullahan River Catchment." },
-            { time: "2026-08-10 11:45:10", type: "success", action: "Clearance Granted", meta: "Consortium C cleared Marikina Riverbank Phase II for active construction." }
+            { time: "2026-08-01 08:00:00", hash: "0x1a8f9b9...3c2a", auth: "SYSTEM INITIALIZATION", type: "success", action: "Continuity Engine Online", meta: "Project Uptime framework legally initialized under DPWH Emergency Directive 2026-A." },
+            { time: "2026-08-05 14:22:10", hash: "0x4b7c2d1...9e4f", auth: "DPWH SEC. VINCE DIZON", type: "warning", action: "Parallel Validation Override", meta: "JICA Engineering Consultants injected into PMRCIP Phase IV to bypass administrative freeze. Construction resumed simultaneously with independent audit." },
+            { time: "2026-08-08 09:15:44", hash: "0x9f3e1a7...5b8d", auth: "ARUP STRUCTURAL (THIRD-PARTY)", type: "success", action: "Structural Clearance Granted", meta: "Mandaluyong Main Drainage Expansion passed load-bearing and financial disbursement checks. Fully cleared." }
         ];
 
         let currentSelectedId = 1;
 
         // View Routing
         function switchView(viewName) {
-            // Update Nav Classes
             document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
             event.target.classList.add('active');
 
-            // Hide all views, show targeted
             document.querySelectorAll('.view-section').forEach(section => section.classList.remove('active'));
             document.getElementById(`view-${viewName}`).classList.add('active');
 
-            // Render specific view data
             if(viewName === 'engine') renderEngine();
             if(viewName === 'matrix') renderMatrix();
             if(viewName === 'audit') renderAuditLogs();
         }
 
-        // Render Functions
+        // Generate Fake Crypto Hash for Logs
+        function generateHash() {
+            return '0x' + Array.from({length: 12}, () => Math.floor(Math.random() * 16).toString(16)).join('') + '...' + Array.from({length: 4}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+        }
+
+        function getTimestamp() {
+            const now = new Date(); // In a real app, this would use the system time context provided (Aug 2026)
+            return now.toISOString().replace('T', ' ').substring(0, 19);
+        }
+
         function renderEngine() {
             const lanes = {
                 investigating: document.getElementById('laneInvestigating'),
@@ -722,9 +697,10 @@
                     <div class="project-card ${isSelected}" onclick="selectProject(${p.id})">
                         <div class="card-header">
                             <span class="risk-badge ${pillClass}">${p.risk}</span>
-                            <span style="font-size: 0.65rem; color: var(--text-tertiary);">#${p.id}</span>
+                            <span style="font-size: 0.65rem; color: var(--text-tertiary);">PID-${p.id}</span>
                         </div>
                         <div class="card-title">${p.name}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top:0.4rem;">${p.zone}</div>
                     </div>
                 `;
 
@@ -757,56 +733,62 @@
 
             contentBox.innerHTML = `
                 <div class="detail-group">
-                    <span class="detail-label">Designation</span>
+                    <span class="detail-label">Project Designation</span>
                     <div class="detail-value" style="color: var(--accent-brand); font-weight: 600;">${p.name}</div>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <div class="detail-group">
-                        <span class="detail-label">Location</span>
+                        <span class="detail-label">Geographic Zone</span>
                         <div class="detail-value">${p.zone}</div>
                     </div>
                     <div class="detail-group">
-                        <span class="detail-label">Assigned Auditor</span>
-                        <div class="detail-value">${p.auditor}</div>
+                        <span class="detail-label">Appropriated Budget</span>
+                        <div class="detail-value" style="font-family: monospace;">${p.budget}</div>
                     </div>
                 </div>
                 <div class="detail-group">
-                    <span class="detail-label">Current Status</span>
-                    <div class="detail-value" style="color: var(--status-warning); border-color: var(--status-warning-bg);">${p.statusText}</div>
+                    <span class="detail-label">Independent Auditor / Validator</span>
+                    <div class="detail-value" style="color: #cbd5e1;">${p.auditor}</div>
+                </div>
+                <div class="detail-group">
+                    <span class="detail-label">Pipeline Status</span>
+                    <div class="detail-value" style="color: var(--status-warning); border-color: var(--status-warning-bg); font-weight: 600;">${p.statusText}</div>
+                </div>
+                <div class="detail-group">
+                    <span class="detail-label">Structural Vulnerability Profile</span>
+                    <div class="detail-value" style="font-size: 0.875rem;">${p.needs}</div>
                 </div>
             `;
 
             if (p.statusCategory === 'investigating') {
                 actionBox.innerHTML = `
                     <div class="action-area">
-                        <button class="btn btn-primary" onclick="transitionStatus(${p.id}, 'validating', 'Are you sure you want to initialize parallel validation? This unfreezes active construction.')">
-                            Init Parallel Validation
+                        <button class="btn btn-primary" onclick="transitionStatus(${p.id}, 'validating', 'AUTHORIZATION REQUIRED: Initiate parallel validation? This unfreezes active construction for \\n\\n[ ${p.name} ]\\n\\nwhile simultaneously engaging ${p.auditor}.')">
+                            Initiate Parallel Validation Protocol
                         </button>
                     </div>
                 `;
             } else if (p.statusCategory === 'validating') {
                 actionBox.innerHTML = `
                     <div class="action-area">
-                        <button class="btn btn-success" onclick="transitionStatus(${p.id}, 'cleared', 'Are you sure you want to mark this protocol as fully cleared and active?')">
+                        <button class="btn btn-success" onclick="transitionStatus(${p.id}, 'cleared', 'AUTHORIZATION REQUIRED: Ensure ${p.auditor} has signed off on the integrity parameters for \\n\\n[ ${p.name} ].\\n\\nMark as fully cleared and operational?')">
                             Mark Cleared & Active
                         </button>
                     </div>
                 `;
             } else {
                 actionBox.innerHTML = `
-                    <div class="action-area" style="text-align: center; color: var(--status-success); font-size: 0.875rem; font-weight: 500;">
-                        ✓ Protocol fully operational & validated.
+                    <div class="action-area" style="text-align: center; color: var(--status-success); font-size: 0.875rem; font-weight: 600;">
+                        ✓ Protocol fully cleared. Separation of Duties validated.
                     </div>
                 `;
             }
         }
 
-        // View 2 Render (Risk Matrix) - Non redundant, focuses purely on risk grading
         function renderMatrix() {
             const tbody = document.getElementById('matrixTableBody');
             tbody.innerHTML = '';
             
-            // Sort by risk criticality
             const sortedProjects = [...projects].sort((a,b) => {
                 const riskVal = { "Critical": 3, "High": 2, "Moderate": 1 };
                 return riskVal[b.risk] - riskVal[a.risk];
@@ -817,37 +799,37 @@
                 tbody.innerHTML += `
                     <tr>
                         <td><span class="risk-badge ${pillClass}">${p.risk} Hazard</span></td>
-                        <td style="font-weight: 600; color: var(--text-primary);">${p.name}</td>
-                        <td style="color: var(--text-secondary); max-width: 400px;">${p.needs}</td>
-                        <td style="font-family: monospace;">${p.budget}</td>
+                        <td>
+                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">${p.name}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-tertiary);">${p.zone}</div>
+                        </td>
+                        <td class="metric-highlight">${p.population || "TBD"}</td>
+                        <td class="metric-money">${p.economicLoss || "TBD"}</td>
+                        <td style="color: var(--text-secondary); max-width: 450px; font-size: 0.8rem;">${p.needs}</td>
                     </tr>
                 `;
             });
         }
 
-        // View 3 Render (Audit Logs)
         function renderAuditLogs() {
             const container = document.getElementById('auditTimelineContainer');
             container.innerHTML = '';
 
-            // Reverse to show newest first
             [...auditLogs].reverse().forEach(log => {
                 container.innerHTML += `
                     <div class="log-entry ${log.type}">
-                        <div class="log-time">[${log.time}]</div>
+                        <div class="log-meta-col">
+                            <span class="log-time">${log.time}</span>
+                            <span class="log-hash">${log.hash}</span>
+                            <span class="log-auth">${log.auth}</span>
+                        </div>
                         <div class="log-details">
                             <div class="log-action">${log.action}</div>
-                            <div class="log-meta">${log.meta}</div>
+                            <div class="log-desc">${log.meta}</div>
                         </div>
                     </div>
                 `;
             });
-        }
-
-        // Action Handlers with Error Prevention and Audit Log Injection
-        function getTimestamp() {
-            const now = new Date();
-            return now.toISOString().replace('T', ' ').substring(0, 19);
         }
 
         function transitionStatus(id, targetCategory, confirmMsg) {
@@ -857,24 +839,28 @@
             if (p) {
                 if (targetCategory === 'validating') {
                     p.statusCategory = 'validating';
-                    p.statusText = 'Simultaneous Audit Active';
+                    p.statusText = 'Simultaneous Engineering Audit Active';
                     
                     auditLogs.push({
                         time: getTimestamp(),
+                        hash: generateHash(),
+                        auth: "EXECUTIVE DIRECTIVE",
                         type: "warning",
                         action: "Parallel Validation Overridden",
-                        meta: `Executive command bypassed gridlock for "${p.name}". Assigned to ${p.auditor}.`
+                        meta: `Gridlock bypassed for "${p.name}". Assumed continuous operations under oversight of ${p.auditor}.`
                     });
 
                 } else if (targetCategory === 'cleared') {
                     p.statusCategory = 'cleared';
-                    p.statusText = 'Cleared & Active Construction';
+                    p.statusText = 'Cleared for Active Construction';
                     
                     auditLogs.push({
                         time: getTimestamp(),
+                        hash: generateHash(),
+                        auth: p.auditor.toUpperCase(),
                         type: "success",
-                        action: "Validation Cleared",
-                        meta: `Independent verification finalized for "${p.name}". Full operational continuity restored.`
+                        action: "Third-Party Clearance Granted",
+                        meta: `Independent verification finalized for "${p.name}". Absolute operational continuity restored without anomalies.`
                     });
                 }
                 renderEngine();
@@ -885,15 +871,15 @@
             const name = document.getElementById('newName').value.trim();
             const zone = document.getElementById('newZone').value.trim();
             const risk = document.getElementById('newRisk').value;
-            const budget = document.getElementById('newBudget').value.trim() || "₱500,000,000";
+            const budget = document.getElementById('newBudget').value.trim() || "₱0.00";
             const needs = document.getElementById('newNeeds').value.trim();
 
             if (!name || !needs) {
-                alert('Error: Designation and Needs fields are required.');
+                alert('Form Error: Designation and Vulnerability Profile fields are mandatory.');
                 return;
             }
 
-            if (!window.confirm(`Deploy "${name}" protocol into the active framework?`)) return;
+            if (!window.confirm(`Are you certain you want to deploy "${name}" into the Project Uptime matrix? This action is immutable.`)) return;
 
             const newId = projects.length > 0 ? Math.max(...projects.map(p => p.id)) + 1 : 1;
 
@@ -903,30 +889,35 @@
                 zone: zone || "Unassigned Sector",
                 risk,
                 budget,
-                auditor: "Pending Assignment",
+                auditor: "Woodfields Consultants Inc. (Auto-Assigned)",
                 statusCategory: "investigating",
                 statusText: "Awaiting Framework Integration",
-                needs
+                needs,
+                population: "Awaiting Data",
+                economicLoss: "Awaiting Data"
             });
 
             auditLogs.push({
                 time: getTimestamp(),
+                hash: generateHash(),
+                auth: "DPWH ADMIN",
                 type: "warning",
-                action: "New Protocol Deployed",
-                meta: `Project "${name}" registered into the Continuity Engine under ${risk} risk status.`
+                action: "New Infrastructure Protocol Deployed",
+                meta: `Project "${name}" injected into the Continuity Engine. Initially halted under ${risk} risk status pending third-party override.`
             });
 
             currentSelectedId = newId;
             renderEngine();
 
-            // Clear inputs
             document.getElementById('newName').value = '';
             document.getElementById('newZone').value = '';
             document.getElementById('newBudget').value = '';
             document.getElementById('newNeeds').value = '';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Initialize default view
+        // Init
         renderEngine();
     </script>
 </body>
