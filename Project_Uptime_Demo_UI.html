@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Uptime: Continuity Engine</title>
+    <style>
+        /* High-Contrast Zinc Palette */
+        :root {
+            --bg-base: #09090b; 
+            --bg-surface: #18181b; 
+            --bg-surface-hover: #27272a; 
+            --border-subtle: #27272a;
+            --border-strong: #3f3f46;
+            
+            --text-primary: #fafafa; 
+            --text-secondary: #a1a1aa; 
+            --text-tertiary: #71717a; 
+            
+            --accent-brand: #3b82f6; 
+            --accent-brand-hover: #2563eb;
+            --accent-brand-bg: rgba(59, 130, 246, 0.1);
+            
+            --status-danger: #ef4444;
+            --status-danger-bg: rgba(239, 68, 68, 0.1);
+            --status-warning: #f59e0b;
+            --status-warning-bg: rgba(245, 158, 11, 0.1);
+            --status-success: #10b981;
+            --status-success-bg: rgba(16, 185, 129, 0.1);
+            
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0 2rem;
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: -0.025em;
+            color: var(--text-primary);
+        }
+
+        .nav-brand .logo-icon {
+            color: var(--accent-brand);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-full);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all var(--transition-fast);
+            cursor: pointer;
+            border: none;
+            background: transparent;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background-color: var(--bg-surface-hover);
+        }
+
+        .nav-link.active {
+            color: var(--text-primary);
+            background-color: var(--bg-surface-hover);
+            box-shadow: inset 0 0 0 1px var(--border-strong);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--status-success);
+            background: var(--status-success-bg);
+            padding: 0.4rem 0.75rem;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--status-success);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--status-success);
+        }
+
+        /* View Management */
+        .view-section {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .view-section.active {
+            display: flex; /* Only show active view */
+        }
+
+        /* KPI Section */
+        .kpi-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .kpi-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: transform var(--transition-fast);
+        }
+
+        .kpi-card:hover {
+            border-color: var(--border-strong);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        /* Fluid Workspace Layout (Engine View) */
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(350px, 1fr);
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .workspace { grid-template-columns: 1fr; }
+        }
+
+        /* Panels */
+        .panel {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .panel-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .panel-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Unconstrained Kanban Board */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1px;
+            background-color: var(--border-subtle); 
+        }
+
+        .kanban-column {
+            background-color: var(--bg-surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 400px;
+        }
+
+        .column-header {
+            padding: 1rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-subtle);
+            background-color: rgba(255,255,255,0.02);
+        }
+
+        .col-danger { color: var(--status-danger); }
+        .col-warning { color: var(--status-warning); }
+        .col-success { color: var(--status-success); }
+
+        .count-badge {
+            background-color: var(--bg-surface-hover);
+            color: var(--text-primary);
+            padding: 0.15rem 0.5rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+        }
+
+        .column-body {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            flex-grow: 1;
+        }
+
+        /* Project Cards */
+        .project-card {
+            background-color: var(--bg-base);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .project-card:hover {
+            border-color: var(--border-strong);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .project-card.active {
+            border-color: var(--accent-brand);
+            background-color: var(--accent-brand-bg);
+            box-shadow: 0 0 0 1px var(--accent-brand);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        .risk-badge {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: var(--radius-full);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .risk-critical { background: var(--status-danger-bg); color: var(--status-danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .risk-high { background: var(--status-warning-bg); color: var(--status-warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+        .risk-moderate { background: var(--accent-brand-bg); color: var(--accent-brand); border: 1px solid rgba(59, 130, 246, 0.2); }
+
+        /* Inspector Panel */
+        .inspector-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .detail-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .detail-value {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            background-color: var(--bg-base);
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .action-area {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-subtle);
+            background-color: var(--bg-base);
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color var(--transition-fast), transform 50ms;
+        }
+
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background-color: var(--accent-brand); color: white; }
+        .btn-primary:hover { background-color: var(--accent-brand-hover); }
+        .btn-success { background-color: var(--status-success); color: white; }
+        .btn-success:hover { background-color: #059669; }
+        .btn-secondary { background-color: var(--bg-surface-hover); color: var(--text-primary); border: 1px solid var(--border-strong); width: auto; padding: 0.6rem 1.5rem; }
+        .btn-secondary:hover { background-color: var(--border-strong); }
+
+        /* Registration Form */
+        .registration-panel { grid-column: 1 / -1; margin-top: 1rem; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; padding: 1.5rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        
+        .form-control {
+            background-color: var(--bg-base);
+            border: 1px solid var(--border-strong);
+            color: var(--text-primary);
+            padding: 0.6rem 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            transition: all var(--transition-fast);
+        }
+        .form-control:focus { outline: none; border-color: var(--accent-brand); box-shadow: 0 0 0 2px var(--accent-brand-bg); }
+        textarea.form-control { resize: vertical; min-height: 80px; }
+        .form-actions { padding: 0 1.5rem 1.5rem 1.5rem; display: flex; justify-content: flex-end; }
+
+        /* RISK MATRIX SPECIFIC STYLES */
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        .matrix-table th, .matrix-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .matrix-table th {
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+        .matrix-table tr:hover {
+            background-color: rgba(255,255,255,0.02);
+        }
+
+        /* AUDIT LOG SPECIFIC STYLES */
+        .audit-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+        .log-entry {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1rem;
+            background-color: var(--bg-base);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            border-left: 4px solid var(--accent-brand);
+        }
+        .log-entry.success { border-left-color: var(--status-success); }
+        .log-entry.warning { border-left-color: var(--status-warning); }
+        
+        .log-time {
+            color: var(--text-secondary);
+            font-family: monospace;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .log-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .log-action {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .log-meta {
+            color: var(--text-tertiary);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Tabbed Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Project Uptime
+        </div>
+        <div class="nav-links">
+            <button class="nav-link active" onclick="switchView('engine')">Continuity Engine</button>
+            <button class="nav-link" onclick="switchView('matrix')">Risk Matrix</button>
+            <button class="nav-link" onclick="switchView('audit')">Audit Logs</button>
+        </div>
+        <div class="status-indicator">
+            <div class="status-dot"></div>
+            Directive Active
+        </div>
+    </nav>
+
+    <!-- VIEW 1: CONTINUITY ENGINE -->
+    <main id="view-engine" class="view-section active">
+        
+        <section class="kpi-section">
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span>Roadblocked Projects</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--status-danger)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div class="kpi-value" id="kpiInvestigating">0</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span>Parallel Validations</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--status-warning)" stroke-width="2"><path d="M2 12h4l2-9 5 18 2-9h5"/></svg>
+                </div>
+                <div class="kpi-value" id="kpiValidating">0</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span>Cleared & Active</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--status-success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div class="kpi-value" id="kpiCleared">0</div>
+            </div>
+        </section>
+
+        <section class="workspace">
+            
+            <!-- Kanban Pipeline -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Operations Pipeline</h2>
+                    <span class="panel-subtitle">Separation of Duties Validation Flow</span>
+                </div>
+                <div class="kanban-board">
+                    <div class="kanban-column">
+                        <div class="column-header col-danger">
+                            Investigation
+                            <span class="count-badge" id="countInv">0</span>
+                        </div>
+                        <div class="column-body" id="laneInvestigating"></div>
+                    </div>
+                    <div class="kanban-column">
+                        <div class="column-header col-warning">
+                            Parallel Validation
+                            <span class="count-badge" id="countVal">0</span>
+                        </div>
+                        <div class="column-body" id="laneValidating"></div>
+                    </div>
+                    <div class="kanban-column">
+                        <div class="column-header col-success">
+                            Cleared & Active
+                            <span class="count-badge" id="countClr">0</span>
+                        </div>
+                        <div class="column-body" id="laneCleared"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inspector -->
+            <aside class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Project Inspector</h2>
+                    <span class="panel-subtitle">Deep-dive analysis & execution controls</span>
+                </div>
+                <div class="inspector-body" id="inspectorContent"></div>
+                <div id="inspectorActionContainer"></div>
+            </aside>
+
+            <!-- Registration Panel -->
+            <div class="panel registration-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Register New Infrastructure Protocol</h2>
+                    <span class="panel-subtitle">Inject new DPWH frameworks into the Uptime engine</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="detail-label">Designation</label>
+                        <input type="text" id="newName" class="form-control" placeholder="e.g., Pasig Embankment">
+                    </div>
+                    <div class="form-group">
+                        <label class="detail-label">Zone</label>
+                        <input type="text" id="newZone" class="form-control" placeholder="e.g., East Sector">
+                    </div>
+                    <div class="form-group">
+                        <label class="detail-label">Risk Hierarchy</label>
+                        <select id="newRisk" class="form-control">
+                            <option value="Critical">Critical (Severe Flood Threat)</option>
+                            <option value="High">High Risk</option>
+                            <option value="Moderate">Moderate Risk</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="detail-label">Budget (PHP)</label>
+                        <input type="text" id="newBudget" class="form-control" placeholder="₱...">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="detail-label">Infrastructure Needs & Vulnerability Profile</label>
+                        <textarea id="newNeeds" class="form-control" placeholder="Summarize dependencies and structural vulnerabilities..."></textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" onclick="registerProject()">Deploy Protocol</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- VIEW 2: RISK MATRIX -->
+    <main id="view-matrix" class="view-section">
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Mass Destruction Risk Matrix</h2>
+                <span class="panel-subtitle">Vulnerability assessment decoupled from operational bottlenecks. Prioritizes resource allocation independent of investigation status.</span>
+            </div>
+            <div class="matrix-grid">
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th>Likeness of Destruction</th>
+                            <th>Project Designation</th>
+                            <th>Vulnerability Profile</th>
+                            <th>Allocated Budget</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matrixTableBody">
+                        <!-- Populated by JS to avoid redundancy -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- VIEW 3: AUDIT LOGS -->
+    <main id="view-audit" class="view-section">
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Separation of Duties (SoD) Immutable Audit Log</h2>
+                <span class="panel-subtitle">Chronological ledger of third-party validations, executive overrides, and system unfreezes.</span>
+            </div>
+            <div class="audit-timeline" id="auditTimelineContainer">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Data State
+        let projects = [
+            {
+                id: 1,
+                name: "Manggahan Floodway Expansion",
+                zone: "Central Metro Manila",
+                risk: "Critical",
+                budget: "₱1,200,000,000",
+                auditor: "Consortium A (Forensic)",
+                statusCategory: "investigating",
+                statusText: "Roadblocked by Inquiry",
+                needs: "Urgent dredging asset deployment and structural wall reinforcement required to prevent massive regional overflow."
+            },
+            {
+                id: 2,
+                name: "Tullahan River Catchment Upgrades",
+                zone: "North Metro Manila",
+                risk: "Critical",
+                budget: "₱850,000,000",
+                auditor: "Consortium B (Civil Group)",
+                statusCategory: "validating",
+                statusText: "Third-Party Audit Active",
+                needs: "Immediate bottleneck clearance and channel widening to sustain baseline flow."
+            },
+            {
+                id: 3,
+                name: "Marikina Riverbank Phase II",
+                zone: "East Metro Manila",
+                risk: "High",
+                budget: "₱600,000,000",
+                auditor: "Consortium C (Compliance)",
+                statusCategory: "cleared",
+                statusText: "Financial Validation",
+                needs: "Riverbank stabilization, sensor integration, and parallel financial tracking."
+            }
+        ];
+
+        let auditLogs = [
+            { time: "2026-08-10 09:15:00", type: "success", action: "Framework Initialization", meta: "Project Uptime Continuity Engine brought online." },
+            { time: "2026-08-10 10:30:22", type: "warning", action: "Third-Party Override Initiated", meta: "Consortium B commenced parallel validation on Tullahan River Catchment." },
+            { time: "2026-08-10 11:45:10", type: "success", action: "Clearance Granted", meta: "Consortium C cleared Marikina Riverbank Phase II for active construction." }
+        ];
+
+        let currentSelectedId = 1;
+
+        // View Routing
+        function switchView(viewName) {
+            // Update Nav Classes
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Hide all views, show targeted
+            document.querySelectorAll('.view-section').forEach(section => section.classList.remove('active'));
+            document.getElementById(`view-${viewName}`).classList.add('active');
+
+            // Render specific view data
+            if(viewName === 'engine') renderEngine();
+            if(viewName === 'matrix') renderMatrix();
+            if(viewName === 'audit') renderAuditLogs();
+        }
+
+        // Render Functions
+        function renderEngine() {
+            const lanes = {
+                investigating: document.getElementById('laneInvestigating'),
+                validating: document.getElementById('laneValidating'),
+                cleared: document.getElementById('laneCleared')
+            };
+
+            Object.values(lanes).forEach(lane => lane.innerHTML = '');
+            let counts = { investigating: 0, validating: 0, cleared: 0 };
+
+            projects.forEach(p => {
+                const pillClass = p.risk === 'Critical' ? 'risk-critical' : (p.risk === 'High' ? 'risk-high' : 'risk-moderate');
+                const isSelected = p.id === currentSelectedId ? 'active' : '';
+
+                const cardHTML = `
+                    <div class="project-card ${isSelected}" onclick="selectProject(${p.id})">
+                        <div class="card-header">
+                            <span class="risk-badge ${pillClass}">${p.risk}</span>
+                            <span style="font-size: 0.65rem; color: var(--text-tertiary);">#${p.id}</span>
+                        </div>
+                        <div class="card-title">${p.name}</div>
+                    </div>
+                `;
+
+                lanes[p.statusCategory].innerHTML += cardHTML;
+                counts[p.statusCategory]++;
+            });
+
+            document.getElementById('countInv').innerText = counts.investigating;
+            document.getElementById('countVal').innerText = counts.validating;
+            document.getElementById('countClr').innerText = counts.cleared;
+            
+            document.getElementById('kpiInvestigating').innerText = counts.investigating;
+            document.getElementById('kpiValidating').innerText = counts.validating;
+            document.getElementById('kpiCleared').innerText = counts.cleared;
+
+            renderInspector();
+        }
+
+        function selectProject(id) {
+            currentSelectedId = id;
+            renderEngine();
+        }
+
+        function renderInspector() {
+            const contentBox = document.getElementById('inspectorContent');
+            const actionBox = document.getElementById('inspectorActionContainer');
+            const p = projects.find(item => item.id === currentSelectedId);
+
+            if (!p) return;
+
+            contentBox.innerHTML = `
+                <div class="detail-group">
+                    <span class="detail-label">Designation</span>
+                    <div class="detail-value" style="color: var(--accent-brand); font-weight: 600;">${p.name}</div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="detail-group">
+                        <span class="detail-label">Location</span>
+                        <div class="detail-value">${p.zone}</div>
+                    </div>
+                    <div class="detail-group">
+                        <span class="detail-label">Assigned Auditor</span>
+                        <div class="detail-value">${p.auditor}</div>
+                    </div>
+                </div>
+                <div class="detail-group">
+                    <span class="detail-label">Current Status</span>
+                    <div class="detail-value" style="color: var(--status-warning); border-color: var(--status-warning-bg);">${p.statusText}</div>
+                </div>
+            `;
+
+            if (p.statusCategory === 'investigating') {
+                actionBox.innerHTML = `
+                    <div class="action-area">
+                        <button class="btn btn-primary" onclick="transitionStatus(${p.id}, 'validating', 'Are you sure you want to initialize parallel validation? This unfreezes active construction.')">
+                            Init Parallel Validation
+                        </button>
+                    </div>
+                `;
+            } else if (p.statusCategory === 'validating') {
+                actionBox.innerHTML = `
+                    <div class="action-area">
+                        <button class="btn btn-success" onclick="transitionStatus(${p.id}, 'cleared', 'Are you sure you want to mark this protocol as fully cleared and active?')">
+                            Mark Cleared & Active
+                        </button>
+                    </div>
+                `;
+            } else {
+                actionBox.innerHTML = `
+                    <div class="action-area" style="text-align: center; color: var(--status-success); font-size: 0.875rem; font-weight: 500;">
+                        ✓ Protocol fully operational & validated.
+                    </div>
+                `;
+            }
+        }
+
+        // View 2 Render (Risk Matrix) - Non redundant, focuses purely on risk grading
+        function renderMatrix() {
+            const tbody = document.getElementById('matrixTableBody');
+            tbody.innerHTML = '';
+            
+            // Sort by risk criticality
+            const sortedProjects = [...projects].sort((a,b) => {
+                const riskVal = { "Critical": 3, "High": 2, "Moderate": 1 };
+                return riskVal[b.risk] - riskVal[a.risk];
+            });
+
+            sortedProjects.forEach(p => {
+                const pillClass = p.risk === 'Critical' ? 'risk-critical' : (p.risk === 'High' ? 'risk-high' : 'risk-moderate');
+                tbody.innerHTML += `
+                    <tr>
+                        <td><span class="risk-badge ${pillClass}">${p.risk} Hazard</span></td>
+                        <td style="font-weight: 600; color: var(--text-primary);">${p.name}</td>
+                        <td style="color: var(--text-secondary); max-width: 400px;">${p.needs}</td>
+                        <td style="font-family: monospace;">${p.budget}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // View 3 Render (Audit Logs)
+        function renderAuditLogs() {
+            const container = document.getElementById('auditTimelineContainer');
+            container.innerHTML = '';
+
+            // Reverse to show newest first
+            [...auditLogs].reverse().forEach(log => {
+                container.innerHTML += `
+                    <div class="log-entry ${log.type}">
+                        <div class="log-time">[${log.time}]</div>
+                        <div class="log-details">
+                            <div class="log-action">${log.action}</div>
+                            <div class="log-meta">${log.meta}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Action Handlers with Error Prevention and Audit Log Injection
+        function getTimestamp() {
+            const now = new Date();
+            return now.toISOString().replace('T', ' ').substring(0, 19);
+        }
+
+        function transitionStatus(id, targetCategory, confirmMsg) {
+            if (!window.confirm(confirmMsg)) return;
+
+            const p = projects.find(item => item.id === id);
+            if (p) {
+                if (targetCategory === 'validating') {
+                    p.statusCategory = 'validating';
+                    p.statusText = 'Simultaneous Audit Active';
+                    
+                    auditLogs.push({
+                        time: getTimestamp(),
+                        type: "warning",
+                        action: "Parallel Validation Overridden",
+                        meta: `Executive command bypassed gridlock for "${p.name}". Assigned to ${p.auditor}.`
+                    });
+
+                } else if (targetCategory === 'cleared') {
+                    p.statusCategory = 'cleared';
+                    p.statusText = 'Cleared & Active Construction';
+                    
+                    auditLogs.push({
+                        time: getTimestamp(),
+                        type: "success",
+                        action: "Validation Cleared",
+                        meta: `Independent verification finalized for "${p.name}". Full operational continuity restored.`
+                    });
+                }
+                renderEngine();
+            }
+        }
+
+        function registerProject() {
+            const name = document.getElementById('newName').value.trim();
+            const zone = document.getElementById('newZone').value.trim();
+            const risk = document.getElementById('newRisk').value;
+            const budget = document.getElementById('newBudget').value.trim() || "₱500,000,000";
+            const needs = document.getElementById('newNeeds').value.trim();
+
+            if (!name || !needs) {
+                alert('Error: Designation and Needs fields are required.');
+                return;
+            }
+
+            if (!window.confirm(`Deploy "${name}" protocol into the active framework?`)) return;
+
+            const newId = projects.length > 0 ? Math.max(...projects.map(p => p.id)) + 1 : 1;
+
+            projects.push({
+                id: newId,
+                name,
+                zone: zone || "Unassigned Sector",
+                risk,
+                budget,
+                auditor: "Pending Assignment",
+                statusCategory: "investigating",
+                statusText: "Awaiting Framework Integration",
+                needs
+            });
+
+            auditLogs.push({
+                time: getTimestamp(),
+                type: "warning",
+                action: "New Protocol Deployed",
+                meta: `Project "${name}" registered into the Continuity Engine under ${risk} risk status.`
+            });
+
+            currentSelectedId = newId;
+            renderEngine();
+
+            // Clear inputs
+            document.getElementById('newName').value = '';
+            document.getElementById('newZone').value = '';
+            document.getElementById('newBudget').value = '';
+            document.getElementById('newNeeds').value = '';
+        }
+
+        // Initialize default view
+        renderEngine();
+    </script>
+</body>
+</html>
