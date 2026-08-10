@@ -396,11 +396,38 @@
         .btn-secondary { background-color: var(--bg-surface-hover); color: var(--text-primary); border: 1px solid var(--border-strong); width: auto; padding: 0.6rem 1.5rem; }
         .btn-secondary:hover { background-color: var(--border-strong); }
 
-        /* Registration Form Alignment */
-        .registration-panel { grid-column: 1 / -1; margin-top: 0.5rem; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; padding: 1.5rem; }
-        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-        .form-group.full-width { grid-column: 1 / -1; }
+        /* Registration Form Alignment FIX */
+        .registration-panel { 
+            grid-column: 1 / -1; 
+            margin-top: 0.5rem; 
+        }
+        
+        .form-grid { 
+            display: grid; 
+            /* Fixed to 2 columns instead of auto-fit to prevent squishing */
+            grid-template-columns: 1fr 1fr; 
+            gap: 1.5rem 1.25rem; 
+            padding: 1.5rem; 
+        }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+
+        .form-group { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 0.4rem; 
+        }
+        
+        .form-group.full-width { 
+            grid-column: 1 / -1; 
+        }
+
+        .form-group .detail-label {
+            /* Pushes the label up, forcing the input to lock to the bottom baseline */
+            margin-bottom: auto; 
+        }
         
         .form-control {
             background-color: var(--bg-base);
@@ -412,16 +439,16 @@
             transition: all var(--transition-fast);
             width: 100%;
         }
+        
         .form-control:focus { outline: none; border-color: var(--accent-brand); box-shadow: 0 0 0 2px var(--accent-brand-bg); }
         textarea.form-control { resize: vertical; min-height: 80px; }
         .form-actions { padding: 0 1.5rem 1.5rem 1.5rem; display: flex; justify-content: flex-end; }
 
         /* RISK MATRIX ALIGNMENT */
         .matrix-container { overflow-x: auto; padding: 0; }
-        .matrix-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; table-layout: fixed; }
+        .matrix-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; table-layout: fixed; min-width: 900px; }
         .matrix-table th, .matrix-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border-subtle); vertical-align: middle; }
         
-        /* Fixed Column Alignments */
         .matrix-table th:nth-child(1), .matrix-table td:nth-child(1) { width: 15%; }
         .matrix-table th:nth-child(2), .matrix-table td:nth-child(2) { width: 25%; }
         .matrix-table th:nth-child(3), .matrix-table td:nth-child(3) { width: 15%; }
@@ -523,7 +550,7 @@
                     </div>
                     <div class="kanban-column">
                         <div class="column-header col-warning">
-                            Parallel Validation
+                            Parallel Validation (Active)
                             <span class="count-badge" id="countVal">0</span>
                         </div>
                         <div class="column-body" id="laneValidating"></div>
@@ -599,9 +626,9 @@
                     <thead>
                         <tr>
                             <th>Hazard Likeness</th>
-                            <th>Project Designation</th>
+                            <th>Project Designation & Zone</th>
                             <th>Est. Population at Risk</th>
-                            <th>Est. Economic Loss</th>
+                            <th>Est. Economic Impact (Loss)</th>
                             <th>Vulnerability Profile / Needs</th>
                         </tr>
                     </thead>
@@ -703,7 +730,7 @@
         }
 
         function generateHash() {
-            return '0x' + Array.from({length: 8}, () => Math.floor(Math.random() * 16).toString(16)).join('') + '...' + Array.from({length: 4}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+            return '0x' + Array.from({length: 12}, () => Math.floor(Math.random() * 16).toString(16)).join('') + '...' + Array.from({length: 4}, () => Math.floor(Math.random() * 16).toString(16)).join('');
         }
 
         function getTimestamp() {
@@ -732,7 +759,7 @@
                             <span style="font-size: 0.65rem; color: var(--text-tertiary);">PID-${p.id}</span>
                         </div>
                         <div class="card-title">${p.name}</div>
-                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.2rem;">${p.zone}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top:0.4rem;">${p.zone}</div>
                     </div>
                 `;
 
@@ -788,7 +815,7 @@
                 </div>
                 <div class="detail-group">
                     <span class="detail-label">Structural Vulnerability Profile</span>
-                    <div class="detail-value" style="font-size: 0.85rem; line-height: 1.4; display:block;">${p.needs}</div>
+                    <div class="detail-value" style="font-size: 0.875rem; line-height: 1.4; display:block;">${p.needs}</div>
                 </div>
             `;
 
@@ -810,7 +837,7 @@
                 `;
             } else {
                 actionBox.innerHTML = `
-                    <div class="action-area" style="text-align: center; color: var(--status-success); font-size: 0.85rem; font-weight: 600;">
+                    <div class="action-area" style="text-align: center; color: var(--status-success); font-size: 0.875rem; font-weight: 600;">
                         ✓ Protocol fully cleared. Separation of Duties validated.
                     </div>
                 `;
@@ -832,12 +859,12 @@
                     <tr>
                         <td><span class="risk-badge ${pillClass}">${p.risk} Hazard</span></td>
                         <td>
-                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.2rem;">${p.name}</div>
+                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">${p.name}</div>
                             <div style="font-size: 0.75rem; color: var(--text-tertiary);">${p.zone}</div>
                         </td>
                         <td class="metric-highlight">${p.population || "TBD"}</td>
                         <td class="metric-money">${p.economicLoss || "TBD"}</td>
-                        <td style="color: var(--text-secondary); font-size: 0.8rem; line-height: 1.4;">${p.needs}</td>
+                        <td style="color: var(--text-secondary); max-width: 450px; font-size: 0.8rem;">${p.needs}</td>
                     </tr>
                 `;
             });
@@ -925,8 +952,8 @@
                 statusCategory: "investigating",
                 statusText: "Awaiting Framework Integration",
                 needs,
-                population: "Assessment Pending",
-                economicLoss: "Assessment Pending"
+                population: "Awaiting Data",
+                economicLoss: "Awaiting Data"
             });
 
             auditLogs.push({
@@ -949,6 +976,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // Init
         renderEngine();
     </script>
 </body>
