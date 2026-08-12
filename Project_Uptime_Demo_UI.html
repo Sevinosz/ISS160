@@ -2,982 +2,348 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Uptime: Continuity Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cybersecurity Exam Simulator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* High-Contrast Zinc Palette */
         :root {
-            --bg-base: #09090b; 
-            --bg-surface: #18181b; 
-            --bg-surface-hover: #27272a; 
-            --border-subtle: #27272a;
-            --border-strong: #3f3f46;
+            /* Clean Light Theme */
+            --bg-body: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --border-light: #e2e8f0;
+            --border-strong: #cbd5e1;
             
-            --text-primary: #fafafa; 
-            --text-secondary: #a1a1aa; 
-            --text-tertiary: #71717a; 
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #e0e7ff;
             
-            --accent-brand: #3b82f6; 
-            --accent-brand-hover: #2563eb;
-            --accent-brand-bg: rgba(59, 130, 246, 0.1);
+            --opt-bg: #ffffff;
+            --opt-hover-bg: #f8fafc;
             
-            --status-danger: #ef4444;
-            --status-danger-bg: rgba(239, 68, 68, 0.1);
-            --status-warning: #f59e0b;
-            --status-warning-bg: rgba(245, 158, 11, 0.1);
-            --status-success: #10b981;
-            --status-success-bg: rgba(16, 185, 129, 0.1);
+            --correct-bg: #f0fdf4;
+            --correct-text: #166534;
+            --correct-border: #22c55e;
             
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --radius-full: 9999px;
-            
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            
-            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --wrong-bg: #fef2f2;
+            --wrong-text: #991b1b;
+            --wrong-border: #ef4444;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        
+        body { 
+            background-color: var(--bg-body); 
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
             -webkit-font-smoothing: antialiased;
         }
-
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            line-height: 1.5;
+        
+        .header-title { color: var(--primary); font-weight: 800; font-size: 1.5rem; }
+        @media (min-width: 768px) { .header-title { font-size: 2rem; } }
+        
+        .exam-container { max-width: 800px; margin: 0 auto; }
+        
+        /* Mobile-friendly Navigation */
+        .nav-pills { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.5rem; justify-content: center; }
+        .nav-pills::-webkit-scrollbar { display: none; }
+        .nav-pills .nav-link {
+            border-radius: 50px; padding: 0.5rem 1.25rem; font-weight: 600; font-size: 0.9rem;
+            color: var(--text-muted); margin: 0 0.25rem; background: var(--surface);
+            border: 1px solid var(--border-strong); white-space: nowrap; transition: all 0.2s;
         }
-
-        /* Nav Bar Alignment */
-        .navbar {
-            background-color: var(--bg-surface);
-            border-bottom: 1px solid var(--border-subtle);
-            padding: 0 2rem;
-            min-height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 50;
+        .nav-pills .nav-link.active { 
+            background-color: var(--primary); color: #fff; border-color: var(--primary); 
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); 
         }
-
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-weight: 700;
-            font-size: 1.1rem;
-            letter-spacing: -0.025em;
-            color: var(--text-primary);
-            white-space: nowrap;
+        
+        /* Card & Task Bar Styling */
+        .card { 
+            border: 1px solid var(--border-light); border-radius: 16px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03); background: var(--surface); 
+            overflow: hidden; margin-bottom: 3rem;
         }
-
-        .nav-brand .logo-icon { color: var(--accent-brand); flex-shrink: 0; }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        
+        .task-bar { background-color: #f1f5f9; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-light); }
+        .task-bar-text { font-weight: 700; font-size: 0.85rem; letter-spacing: 0.5px; color: var(--text-muted); text-transform: uppercase; }
+        
+        .progress { height: 8px; border-radius: 0; background-color: var(--border-light); }
+        .progress-bar { background-color: var(--primary); transition: width 0.4s ease; }
+        
+        .question-text { font-size: 1.15rem; font-weight: 600; color: #0f172a; margin-bottom: 1.5rem; line-height: 1.6; }
+        @media (min-width: 768px) { .question-text { font-size: 1.3rem; margin-bottom: 2rem; } }
+        
+        /* Option Blocks */
+        .option-block {
+            display: flex; align-items: flex-start; padding: 1rem;
+            margin-bottom: 0.75rem; border: 2px solid var(--border-light); border-radius: 12px;
+            cursor: pointer; transition: all 0.2s ease; background: var(--opt-bg);
         }
-
-        .nav-link {
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-full);
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all var(--transition-fast);
-            cursor: pointer;
-            border: none;
-            background: transparent;
-            white-space: nowrap;
+        .option-block:hover:not(.disabled) { border-color: var(--border-strong); background-color: var(--opt-hover-bg); }
+        
+        .option-letter { 
+            font-weight: 700; background: #f1f5f9; color: var(--text-muted); 
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; 
+            border-radius: 8px; margin-right: 1rem; flex-shrink: 0; font-size: 0.95rem;
         }
-
-        .nav-link:hover {
-            color: var(--text-primary);
-            background-color: var(--bg-surface-hover);
-        }
-
-        .nav-link.active {
-            color: var(--text-primary);
-            background-color: var(--bg-surface-hover);
-            box-shadow: inset 0 0 0 1px var(--border-strong);
-        }
-
-        .status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--status-success);
-            background: var(--status-success-bg);
-            padding: 0.4rem 0.85rem;
-            border-radius: var(--radius-full);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            white-space: nowrap;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--status-success);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--status-success);
-            flex-shrink: 0;
-        }
-
-        /* Main View Container */
-        .view-section {
-            display: none; 
-            flex-direction: column;
-            gap: 1.5rem;
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 2rem;
-            width: 100%;
-        }
-        .view-section.active { display: flex; }
-
-        /* KPI Alignment Grid */
-        .kpi-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.25rem;
-            width: 100%;
-        }
-
-        .kpi-card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-lg);
-            padding: 1.25rem 1.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 0.75rem;
-            transition: border-color var(--transition-fast);
-        }
-
-        .kpi-card:hover { border-color: var(--border-strong); }
-
-        .kpi-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .kpi-value {
-            font-size: 2.25rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1;
-        }
-
-        /* Workspace Grid (Kanban + Inspector Alignment) */
-        .workspace {
-            display: grid;
-            grid-template-columns: minmax(0, 1.8fr) minmax(360px, 1fr);
-            gap: 1.5rem;
-            align-items: start;
-            width: 100%;
-        }
-
-        @media (max-width: 1100px) { .workspace { grid-template-columns: 1fr; } }
-
-        /* Generic Panels */
-        .panel {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-lg);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            width: 100%;
-        }
-
-        .panel-header {
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid var(--border-subtle);
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .panel-title { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
-        .panel-subtitle { font-size: 0.85rem; color: var(--text-secondary); }
-
-        /* Kanban Column Alignment */
-        .kanban-board {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 1px;
-            background-color: var(--border-subtle); 
-        }
-
-        @media (max-width: 850px) { .kanban-board { grid-template-columns: 1fr; } }
-
-        .kanban-column {
-            background-color: var(--bg-surface);
-            display: flex;
-            flex-direction: column;
-            min-height: 420px;
-        }
-
-        .column-header {
-            padding: 1rem 1.25rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border-subtle);
-            background-color: rgba(255,255,255,0.015);
-        }
-
-        .col-danger { color: var(--status-danger); }
-        .col-warning { color: var(--status-warning); }
-        .col-success { color: var(--status-success); }
-
-        .count-badge {
-            background-color: var(--bg-surface-hover);
-            color: var(--text-primary);
-            padding: 0.15rem 0.55rem;
-            border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .column-body {
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            flex-grow: 1;
-        }
-
-        /* Project Cards Alignment */
-        .project-card {
-            background-color: var(--bg-base);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-md);
-            padding: 1rem;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .project-card:hover {
-            border-color: var(--border-strong);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .project-card.active {
-            border-color: var(--accent-brand);
-            background-color: var(--accent-brand-bg);
-            box-shadow: 0 0 0 1px var(--accent-brand);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .card-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            line-height: 1.35;
-        }
-
-        .risk-badge {
-            font-size: 0.65rem;
-            font-weight: 600;
-            padding: 0.2rem 0.5rem;
-            border-radius: var(--radius-full);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            white-space: nowrap;
-        }
-
-        .risk-critical { background: var(--status-danger-bg); color: var(--status-danger); border: 1px solid rgba(239, 68, 68, 0.2); }
-        .risk-high { background: var(--status-warning-bg); color: var(--status-warning); border: 1px solid rgba(245, 158, 11, 0.2); }
-        .risk-moderate { background: var(--accent-brand-bg); color: var(--accent-brand); border: 1px solid rgba(59, 130, 246, 0.2); }
-
-        /* Inspector Panel Alignment */
-        .inspector-body {
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-            flex-grow: 1;
-        }
-
-        .detail-row-2col {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            width: 100%;
-        }
-
-        .detail-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.35rem;
-            width: 100%;
-        }
-
-        .detail-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .detail-value {
-            font-size: 0.9rem;
-            color: var(--text-primary);
-            background-color: var(--bg-base);
-            padding: 0.75rem;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-subtle);
-            min-height: 42px;
-            display: flex;
-            align-items: center;
-        }
-
-        .action-area {
-            padding: 1.25rem 1.5rem;
-            border-top: 1px solid var(--border-subtle);
-            background-color: var(--bg-base);
-        }
-
+        .option-text { font-size: 1rem; color: var(--text-main); line-height: 1.5; padding-top: 0.25rem; }
+        
+        /* Selection States */
+        .option-block.selected { border-color: var(--primary); background-color: var(--primary-light); }
+        .option-block.selected .option-letter { background: var(--primary); color: #fff; }
+        .option-block.disabled { cursor: not-allowed; opacity: 0.7; pointer-events: none; }
+        
         /* Buttons */
-        .btn {
-            width: 100%;
-            padding: 0.85rem 1rem;
-            border-radius: var(--radius-md);
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-            transition: background-color var(--transition-fast), transform 50ms;
+        .btn-action { 
+            border-radius: 12px; padding: 0.85rem 1.5rem; font-weight: 600; font-size: 1.05rem; 
+            transition: all 0.2s; background-color: var(--primary); border: none; color: #fff;
+            width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
         }
-
-        .btn:active { transform: scale(0.98); }
-        .btn-primary { background-color: var(--accent-brand); color: white; }
-        .btn-primary:hover { background-color: var(--accent-brand-hover); }
-        .btn-success { background-color: var(--status-success); color: white; }
-        .btn-success:hover { background-color: #059669; }
-        .btn-secondary { background-color: var(--bg-surface-hover); color: var(--text-primary); border: 1px solid var(--border-strong); width: auto; padding: 0.6rem 1.5rem; }
-        .btn-secondary:hover { background-color: var(--border-strong); }
-
-        /* Registration Form Alignment FIX */
-        .registration-panel { 
-            grid-column: 1 / -1; 
-            margin-top: 0.5rem; 
-        }
+        @media (min-width: 768px) { .btn-action { width: auto; min-width: 200px; } }
+        .btn-action:hover:not(:disabled) { background-color: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+        .btn-action:disabled { background-color: var(--border-strong); color: var(--surface); }
         
-        .form-grid { 
-            display: grid; 
-            /* Fixed to 2 columns instead of auto-fit to prevent squishing */
-            grid-template-columns: 1fr 1fr; 
-            gap: 1.5rem 1.25rem; 
-            padding: 1.5rem; 
-        }
-
-        @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-        }
-
-        .form-group { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 0.4rem; 
-        }
+        .btn-outline-action { background: transparent; border: 2px solid var(--border-strong); color: var(--text-main); }
+        .btn-outline-action:hover { background: var(--border-light); color: var(--text-main); }
         
-        .form-group.full-width { 
-            grid-column: 1 / -1; 
-        }
-
-        .form-group .detail-label {
-            /* Pushes the label up, forcing the input to lock to the bottom baseline */
-            margin-bottom: auto; 
-        }
+        .fade-transition { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .form-control {
-            background-color: var(--bg-base);
-            border: 1px solid var(--border-strong);
-            color: var(--text-primary);
-            padding: 0.65rem 0.75rem;
-            border-radius: var(--radius-md);
-            font-size: 0.875rem;
-            transition: all var(--transition-fast);
-            width: 100%;
-        }
-        
-        .form-control:focus { outline: none; border-color: var(--accent-brand); box-shadow: 0 0 0 2px var(--accent-brand-bg); }
-        textarea.form-control { resize: vertical; min-height: 80px; }
-        .form-actions { padding: 0 1.5rem 1.5rem 1.5rem; display: flex; justify-content: flex-end; }
-
-        /* RISK MATRIX ALIGNMENT */
-        .matrix-container { overflow-x: auto; padding: 0; }
-        .matrix-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; table-layout: fixed; min-width: 900px; }
-        .matrix-table th, .matrix-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border-subtle); vertical-align: middle; }
-        
-        .matrix-table th:nth-child(1), .matrix-table td:nth-child(1) { width: 15%; }
-        .matrix-table th:nth-child(2), .matrix-table td:nth-child(2) { width: 25%; }
-        .matrix-table th:nth-child(3), .matrix-table td:nth-child(3) { width: 15%; }
-        .matrix-table th:nth-child(4), .matrix-table td:nth-child(4) { width: 15%; }
-        .matrix-table th:nth-child(5), .matrix-table td:nth-child(5) { width: 30%; }
-
-        .matrix-table th { color: var(--text-secondary); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; background: rgba(255,255,255,0.015); }
-        .matrix-table tr:hover td { background-color: rgba(255,255,255,0.015); }
-        .metric-highlight { color: var(--status-danger); font-weight: 600; font-family: monospace; font-size: 0.9rem;}
-        .metric-money { color: var(--status-warning); font-family: monospace; font-size: 0.9rem; }
-
-        /* AUDIT LOG ALIGNMENT */
-        .audit-timeline { display: flex; flex-direction: column; gap: 0.75rem; padding: 1.5rem; }
-        .log-entry {
-            display: grid;
-            grid-template-columns: 240px 1fr;
-            align-items: center;
-            gap: 1.5rem;
-            padding: 1rem 1.25rem;
-            background-color: var(--bg-base);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-md);
-            border-left: 4px solid var(--accent-brand);
-        }
-        @media (max-width: 768px) { .log-entry { grid-template-columns: 1fr; gap: 0.75rem; } }
-        .log-entry.success { border-left-color: var(--status-success); }
-        .log-entry.warning { border-left-color: var(--status-warning); }
-        
-        .log-meta-col { display: flex; flex-direction: column; gap: 0.25rem; justify-content: center; }
-        .log-time { color: var(--text-secondary); font-family: monospace; font-size: 0.8rem; }
-        .log-hash { color: var(--text-tertiary); font-family: monospace; font-size: 0.7rem; }
-        .log-auth { color: var(--accent-brand); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.025em; }
-        
-        .log-details { display: flex; flex-direction: column; gap: 0.25rem; justify-content: center; }
-        .log-action { color: var(--text-primary); font-weight: 600; font-size: 0.925rem; }
-        .log-desc { color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4; }
+        /* Summary Review Items */
+        .review-item { background: #fff; border: 1px solid var(--border-light); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+        .review-question { font-size: 1.05rem; font-weight: 600; margin-bottom: 1rem; color: #0f172a; }
+        .review-badge { display: flex; align-items: flex-start; padding: 0.75rem; border-radius: 8px; font-weight: 500; font-size: 0.95rem; border: 1px solid transparent; margin-bottom: 0.5rem; }
+        .review-badge i { margin-top: 0.15rem; margin-right: 0.5rem; }
+        .review-badge.correct { background: var(--correct-bg); color: var(--correct-text); border-color: #bbf7d0; }
+        .review-badge.wrong { background: var(--wrong-bg); color: var(--wrong-text); border-color: #fecaca; }
     </style>
 </head>
 <body>
 
-    <!-- Nav Bar -->
-    <nav class="navbar">
-        <div class="nav-brand">
-            <svg class="logo-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Project Uptime
-        </div>
-        <div class="nav-links">
-            <button class="nav-link active" onclick="switchView('engine', event)">Continuity Engine</button>
-            <button class="nav-link" onclick="switchView('matrix', event)">Risk Matrix</button>
-            <button class="nav-link" onclick="switchView('audit', event)">Audit Logs</button>
-        </div>
-        <div class="status-indicator">
-            <div class="status-dot"></div>
-            Directive Active
-        </div>
-    </nav>
+<div class="container py-4 py-md-5 exam-container">
+    <div class="text-center mb-4">
+        <h2 class="header-title"><i class="fas fa-shield-check text-primary me-2"></i> Security Exam</h2>
+        <p class="text-muted">Select a module to begin. Questions are randomized.</p>
+    </div>
+    
+    <div class="d-flex justify-content-center mb-4">
+        <ul class="nav nav-pills" id="setTabs">
+            <li class="nav-item"><a class="nav-link active" onclick="loadSet(1)">Module 1</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="loadSet(2)">Module 2</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="loadSet(3)">Module 3</a></li>
+        </ul>
+    </div>
 
-    <!-- VIEW 1: CONTINUITY ENGINE -->
-    <main id="view-engine" class="view-section active">
-        
-        <section class="kpi-section">
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span>Frozen by Gridlock (Investigations)</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--status-danger)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                </div>
-                <div class="kpi-value" id="kpiInvestigating">0</div>
+    <div class="card" id="quiz-card">
+        <!-- Question View -->
+        <div id="question-view">
+            <!-- Process / Task Bar -->
+            <div class="task-bar d-flex justify-content-between align-items-center">
+                <span class="task-bar-text" id="module-indicator"><i class="fas fa-layer-group me-2"></i> Module 1</span>
+                <span class="task-bar-text text-primary" id="question-counter">Q: 1 / 60</span>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span>Parallel Independent Validations</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--status-warning)" stroke-width="2"><path d="M2 12h4l2-9 5 18 2-9h5"/></svg>
-                </div>
-                <div class="kpi-value" id="kpiValidating">0</div>
+            <div class="progress">
+                <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span>Cleared for Active Construction</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--status-success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                </div>
-                <div class="kpi-value" id="kpiCleared">0</div>
-            </div>
-        </section>
-
-        <section class="workspace">
-            <!-- Kanban Pipeline -->
-            <div class="panel">
-                <div class="panel-header">
-                    <h2 class="panel-title">Operations Pipeline (DPWH NCR)</h2>
-                    <span class="panel-subtitle">Separation of Duties (SoD) Framework Validation Flow</span>
-                </div>
-                <div class="kanban-board">
-                    <div class="kanban-column">
-                        <div class="column-header col-danger">
-                            Administrative Freeze
-                            <span class="count-badge" id="countInv">0</span>
-                        </div>
-                        <div class="column-body" id="laneInvestigating"></div>
-                    </div>
-                    <div class="kanban-column">
-                        <div class="column-header col-warning">
-                            Parallel Validation (Active)
-                            <span class="count-badge" id="countVal">0</span>
-                        </div>
-                        <div class="column-body" id="laneValidating"></div>
-                    </div>
-                    <div class="kanban-column">
-                        <div class="column-header col-success">
-                            Cleared & Operational
-                            <span class="count-badge" id="countClr">0</span>
-                        </div>
-                        <div class="column-body" id="laneCleared"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Inspector -->
-            <aside class="panel">
-                <div class="panel-header">
-                    <h2 class="panel-title">Infrastructure Inspector</h2>
-                    <span class="panel-subtitle">Deep-dive analysis & execution controls</span>
-                </div>
-                <div class="inspector-body" id="inspectorContent"></div>
-                <div id="inspectorActionContainer"></div>
-            </aside>
-
-            <!-- Registration Panel -->
-            <div class="panel registration-panel">
-                <div class="panel-header">
-                    <h2 class="panel-title">Register New DPWH Infrastructure Protocol</h2>
-                    <span class="panel-subtitle">Inject new frameworks into the Project Uptime Continuity Engine</span>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="detail-label">Project Designation (Contract ID)</label>
-                        <input type="text" id="newName" class="form-control" placeholder="e.g., Mandaluyong Main Drainage Project">
-                    </div>
-                    <div class="form-group">
-                        <label class="detail-label">Geographic Zone</label>
-                        <input type="text" id="newZone" class="form-control" placeholder="e.g., NCR Central">
-                    </div>
-                    <div class="form-group">
-                        <label class="detail-label">Likeness of Destruction (Risk Hierarchy)</label>
-                        <select id="newRisk" class="form-control">
-                            <option value="Critical">Critical (Severe Urban Flood Threat)</option>
-                            <option value="High">High Risk (Riverbank Erosion)</option>
-                            <option value="Moderate">Moderate Risk (Localized Siltation)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="detail-label">Appropriated Budget (PHP)</label>
-                        <input type="text" id="newBudget" class="form-control" placeholder="₱...">
-                    </div>
-                    <div class="form-group full-width">
-                        <label class="detail-label">Structural Vulnerability & Independent Needs</label>
-                        <textarea id="newNeeds" class="form-control" placeholder="Summarize engineering dependencies and independent auditing requirements..."></textarea>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button class="btn btn-secondary" onclick="registerProject()">Deploy Protocol</button>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- VIEW 2: RISK MATRIX -->
-    <main id="view-matrix" class="view-section">
-        <div class="panel">
-            <div class="panel-header">
-                <h2 class="panel-title">Mass Destruction Risk Matrix</h2>
-                <span class="panel-subtitle">Vulnerability assessment decoupled from operational bottlenecks. Prioritizes resource allocation independent of investigation status.</span>
-            </div>
-            <div class="matrix-container">
-                <table class="matrix-table">
-                    <thead>
-                        <tr>
-                            <th>Hazard Likeness</th>
-                            <th>Project Designation & Zone</th>
-                            <th>Est. Population at Risk</th>
-                            <th>Est. Economic Impact (Loss)</th>
-                            <th>Vulnerability Profile / Needs</th>
-                        </tr>
-                    </thead>
-                    <tbody id="matrixTableBody">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
-
-    <!-- VIEW 3: AUDIT LOGS -->
-    <main id="view-audit" class="view-section">
-        <div class="panel">
-            <div class="panel-header">
-                <h2 class="panel-title">Separation of Duties (SoD) Immutable Audit Log</h2>
-                <span class="panel-subtitle">Chronological, cryptographically hashed ledger of third-party validations, executive overrides, and operational unfreezes.</span>
-            </div>
-            <div class="audit-timeline" id="auditTimelineContainer">
-                <!-- Populated by JS -->
-            </div>
-        </div>
-    </main>
-
-    <script>
-        let projects = [
-            {
-                id: 1,
-                name: "Navotas Coastal Dike Fortification (Phase III)",
-                zone: "NCR North (Camanava)",
-                risk: "Critical",
-                budget: "₱1,850,000,000",
-                auditor: "COA Special Audit Task Force",
-                statusCategory: "investigating",
-                statusText: "Halted by Senate Blue Ribbon Inquiry",
-                needs: "Repair of breached navigational gate and elevation of coastal seawall to prevent storm surge inundation in low-lying residential sectors.",
-                population: "315,000+",
-                economicLoss: "₱4.2 Billion / Storm"
-            },
-            {
-                id: 2,
-                name: "Pasig-Marikina River Channel Improvement Project (PMRCIP)",
-                zone: "NCR East",
-                risk: "Critical",
-                budget: "₱14,300,000,000",
-                auditor: "JICA Engineering Consultants",
-                statusCategory: "validating",
-                statusText: "Simultaneous Engineering Audit Active",
-                needs: "Dredging of 5.4M cubic meters of silt and construction of revetment walls. Independent validation running concurrently to bypass sequential freezes.",
-                population: "1.2 Million+",
-                economicLoss: "₱18.5 Billion / Storm"
-            },
-            {
-                id: 3,
-                name: "Parañaque Spillway & Subterranean Tunnel",
-                zone: "NCR South",
-                risk: "High",
-                budget: "₱6,400,000,000",
-                auditor: "Sycip Gorres Velayo (SGV) Infrastructure Advisory",
-                statusCategory: "validating",
-                statusText: "Forensic Financial Validation",
-                needs: "Subterranean boring required to drain Laguna de Bay overflow directly to Manila Bay. SGV currently validating contractor disbursement integrity.",
-                population: "850,000+",
-                economicLoss: "₱9.1 Billion / Storm"
-            },
-            {
-                id: 4,
-                name: "Mandaluyong Main Drainage Expansion (Maysilo Circle)",
-                zone: "NCR Central",
-                risk: "Moderate",
-                budget: "₱450,000,000",
-                auditor: "Arup Structural Validation Team",
-                statusCategory: "cleared",
-                statusText: "Cleared for Active Construction",
-                needs: "Installation of high-capacity interceptor pipes. Structural and financial integrity cleared by Arup; works progressing unimpeded.",
-                population: "120,000+",
-                economicLoss: "₱1.4 Billion / Storm"
-            }
-        ];
-
-        let auditLogs = [
-            { time: "2026-08-01 08:00:00", hash: "0x1a8f9b9...3c2a", auth: "SYSTEM INITIALIZATION", type: "success", action: "Continuity Engine Online", meta: "Project Uptime framework legally initialized under DPWH Emergency Directive 2026-A." },
-            { time: "2026-08-05 14:22:10", hash: "0x4b7c2d1...9e4f", auth: "DPWH SEC. VINCE DIZON", type: "warning", action: "Parallel Validation Override", meta: "JICA Engineering Consultants injected into PMRCIP Phase IV to bypass administrative freeze. Construction resumed simultaneously with independent audit." },
-            { time: "2026-08-08 09:15:44", hash: "0x9f3e1a7...5b8d", auth: "ARUP STRUCTURAL (THIRD-PARTY)", type: "success", action: "Structural Clearance Granted", meta: "Mandaluyong Main Drainage Expansion passed load-bearing and financial disbursement checks. Fully cleared." }
-        ];
-
-        let currentSelectedId = 1;
-
-        function switchView(viewName, evt) {
-            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-            if(evt) evt.target.classList.add('active');
-
-            document.querySelectorAll('.view-section').forEach(section => section.classList.remove('active'));
-            document.getElementById(`view-${viewName}`).classList.add('active');
-
-            if(viewName === 'engine') renderEngine();
-            if(viewName === 'matrix') renderMatrix();
-            if(viewName === 'audit') renderAuditLogs();
-        }
-
-        function generateHash() {
-            return '0x' + Array.from({length: 12}, () => Math.floor(Math.random() * 16).toString(16)).join('') + '...' + Array.from({length: 4}, () => Math.floor(Math.random() * 16).toString(16)).join('');
-        }
-
-        function getTimestamp() {
-            const now = new Date();
-            return now.toISOString().replace('T', ' ').substring(0, 19);
-        }
-
-        function renderEngine() {
-            const lanes = {
-                investigating: document.getElementById('laneInvestigating'),
-                validating: document.getElementById('laneValidating'),
-                cleared: document.getElementById('laneCleared')
-            };
-
-            Object.values(lanes).forEach(lane => lane.innerHTML = '');
-            let counts = { investigating: 0, validating: 0, cleared: 0 };
-
-            projects.forEach(p => {
-                const pillClass = p.risk === 'Critical' ? 'risk-critical' : (p.risk === 'High' ? 'risk-high' : 'risk-moderate');
-                const isSelected = p.id === currentSelectedId ? 'active' : '';
-
-                const cardHTML = `
-                    <div class="project-card ${isSelected}" onclick="selectProject(${p.id})">
-                        <div class="card-header">
-                            <span class="risk-badge ${pillClass}">${p.risk}</span>
-                            <span style="font-size: 0.65rem; color: var(--text-tertiary);">PID-${p.id}</span>
-                        </div>
-                        <div class="card-title">${p.name}</div>
-                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top:0.4rem;">${p.zone}</div>
-                    </div>
-                `;
-
-                lanes[p.statusCategory].innerHTML += cardHTML;
-                counts[p.statusCategory]++;
-            });
-
-            document.getElementById('countInv').innerText = counts.investigating;
-            document.getElementById('countVal').innerText = counts.validating;
-            document.getElementById('countClr').innerText = counts.cleared;
             
-            document.getElementById('kpiInvestigating').innerText = counts.investigating;
-            document.getElementById('kpiValidating').innerText = counts.validating;
-            document.getElementById('kpiCleared').innerText = counts.cleared;
+            <!-- Question Content -->
+            <div class="card-body p-3 p-md-4 p-lg-5 fade-transition" id="card-body-content">
+                <div class="question-text" id="question-text">Initializing...</div>
+                
+                <div id="options-container" class="mb-4">
+                    <!-- Options injected here -->
+                </div>
+                
+                <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                    <button class="btn btn-action" id="btn-next" onclick="nextQuestion()" disabled>
+                        Next Question <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary View -->
+        <div id="summary-view" style="display:none;" class="card-body p-3 p-md-5 text-center fade-transition">
+            <div class="mb-3">
+                <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+            </div>
+            <h2 class="mb-2 fw-bold" style="color: #0f172a;">Module Completed</h2>
+            <p class="text-muted mb-4">Here is your final performance review.</p>
+            
+            <div class="p-4 rounded-4 mb-4" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                <h1 class="display-4 fw-bold text-primary mb-0"><span id="final-score">0</span> <span class="fs-3 text-muted">/ <span id="final-total">0</span></span></h1>
+                <p class="text-muted fw-semibold mt-2 mb-0">Total Correct</p>
+            </div>
+            
+            <div class="d-flex flex-column flex-md-row justify-content-center gap-3 mb-5">
+                <button class="btn btn-action btn-outline-action w-100 w-md-auto" onclick="loadSet(currentSetNum)">
+                    <i class="fas fa-redo-alt"></i> Retake Module
+                </button>
+                <button class="btn btn-action w-100 w-md-auto" onclick="loadNextSet()">
+                    Next Module <i class="fas fa-forward"></i>
+                </button>
+            </div>
+            
+            <h4 class="text-start mb-3 fw-bold" style="color: #0f172a;">Detailed Review</h4>
+            <div id="review-container" class="text-start">
+                <!-- Review items injected here -->
+            </div>
+            
+            <div class="mt-4 text-center">
+                 <button class="btn btn-action btn-outline-action mx-auto w-auto" onclick="window.scrollTo(0,0)">
+                     <i class="fas fa-arrow-up"></i> Back to Top
+                 </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-            renderInspector();
+<script>
+    const rawExamData = {"set1": [{"question": "Which of the following is the HIGHEST level of security for media management?", "options": {"A": "Encrypted storage on a cloud-based server", "B": "Unencrypted storage on a local hard drive", "C": "Unencrypted storage on a removable USB drive", "D": "Encrypted storage on a physical server at a secure location"}, "correct": "D"}, {"question": "During a security review, an analyst discovers that employees are sharing passwords for convenience. What strategy should the organization implement to reduce this risk while maintaining productivity?", "options": {"A": "Implement multifactor authentication (MFA)", "B": "Encourage strong password creation", "C": "Shorten password expiration times", "D": "Conduct employee phishing training"}, "correct": "A"}, {"question": "In a Disaster Recovery Plan (DRP), which of the following strategies is focused on ensuring that critical business functions can continue during a disruption?", "options": {"A": "Incident response", "B": "Business continuity", "C": "Risk management", "D": "Disaster Recovery"}, "correct": "B"}, {"question": "What is the primary role of a Public Key Infrastructure (PKI) in an organizational setting?", "options": {"A": "Providing a framework for email encryption standards", "B": "Implementing network-level firewall security", "C": "Facilitating secure exchange of public keys", "D": "Ensuring database integrity through hashing"}, "correct": "C"}, {"question": "An organization is concerned about phishing attacks targeting their employees. Which of the following measures is most effective in mitigating this risk?", "options": {"A": "Conducting regular security awareness training", "B": "Implementing inbound email encryption", "C": "Deploying a comprehensive firewall solution", "D": "Installing antivirus software on all devices"}, "correct": "A"}, {"question": "An organization is implementing a new policy that requires all employees to use Multi-Factor Authentication (MFA) when accessing sensitive systems. Which of the following factors would best strengthen the security provided by MFA?", "options": {"A": "A password with a minimum of eight characters", "B": "A biometric factor, such as a fingerprint scan", "C": "A secure token sent via email", "D": "A knowledge-based question, such as What is your mother's maiden name?"}, "correct": "B"}, {"question": "Which of the following is the MOST important indicator of a vulnerable and outdated component on a network?", "options": {"A": "The component has a high number of failed login attempts", "B": "The component has not been patched recently", "C": "The component is running an older version of its operating system", "D": "The component is running software that is no longer supported by the vendor"}, "correct": "D"}, {"question": "Which of the following types of attacks is mitigated by using two-factor authentication?", "options": {"A": "Phishing", "B": "Successful brute-force password attempts", "C": "SQL injection", "D": "DDoS attack"}, "correct": "B"}, {"question": "An attacker gains entry into a network system using a compromised host machine. What type of tool might they use to maintain access over a long period without detection?", "options": {"A": "Worm", "B": "Trojan Horse", "C": "Rootkit", "D": "Botnet"}, "correct": "C"}, {"question": "Your company is experiencing an increase in cyberattacks, and you have been tasked with improving security protocols. What is the process of defining, implementing, and maintaining policies and procedures related to granting permissions to organizational resources?", "options": {"A": "Risk management lifecycle", "B": "Data management lifecycle", "C": "Access management lifecycle", "D": "Incident management lifecycle"}, "correct": "C"}, {"question": "As the IT director of a mid-sized tech startup, your organization is setting up a remote site in a rural area. Due to the remote location, your internet connectivity options are limited. You need a solution that offers decent internet speeds for your team's cloud-based workloads and video conferencing needs. The options available to you are DSL, Fiber (offered by a local power company), and Satellite Internet. Considering the location and the organization's needs, which internet connectivity solution should you choose?", "options": {"A": "DSL", "B": "Dial-Up", "C": "Fiber", "D": "Satellite Internet"}, "correct": "D"}, {"question": "Which of the following organizational processes is the MOST effective in preventing data breaches?", "options": {"A": "Conducting periodic security assessments", "B": "Implementing strict access controls", "C": "Implementing password policies", "D": "Implementing regular security training for employees"}, "correct": "D"}, {"question": "An employee is terminated for policy violations and is escorted out immediately. The manager asks IT to remove access. Which sequence best reflects immediate deprovisioning priorities?", "options": {"A": "Wait until the end of the day to disable accounts so the employee can retrieve personal files", "B": "Revoke physical access, disable network and email accounts, invalidate active sessions, then remove application access and tokens", "C": "Disable the user account next week after confirming that all assigned assets have been returned", "D": "Remove access to low risk applications first, then disable email after HR completes documentation"}, "correct": "B"}, {"question": "A company social networking application stores user credentials on the server without encryption. Which of the following solutions should be implemented to protect the credentials from unauthorized access?", "options": {"A": "Enforce a password expiration policy for user accounts", "B": "Encrypt the user credentials using a symmetric encryption algorithm", "C": "Implement an Intrusion Detection System to monitor access to credentials", "D": "Use a hashing algorithm to store user credentials"}, "correct": "D"}, {"question": "Which of the following is the MOST important factor to consider when implementing security measures in an organization?", "options": {"A": "The legislative and regulatory requirements", "B": "The level of user awareness and training", "C": "The cost of the measures", "D": "The level of technical expertise of the security team"}, "correct": "A"}, {"question": "A team is designing certificate based authentication for a new application. They want to ensure that even if an attacker copies the certificate file, the attacker still cannot authenticate. Which implementation choice most directly supports that goal?", "options": {"A": "Store the private key in a hardware backed keystore and mark it as non-exportable", "B": "Use the same certificate and private key for all users to simplify management", "C": "Allow users to email their certificate to themselves for easy setup on new devices", "D": "Use a self signed certificate for each user to avoid Certificate Authority (CA) dependencies"}, "correct": "A"}, {"question": "In incident management, which of these is NOT a recognized category of events and/or incidents?", "options": {"A": "Technical", "B": "Legal", "C": "Physical", "D": "Environmental"}, "correct": "D"}, {"question": "A company plans to transition to the cloud to improve scalability and reduce IT costs. What is the most critical aspect to consider to maintain data security during this transition?", "options": {"A": "Selecting a Cloud Service Provider (CSP) with a comprehensive Service Level Agreement (SLA).", "B": "Migrating to a cloud service with the lowest operational cost.", "C": "Encrypting data before moving it to the cloud.", "D": "Reducing employee access to cloud services."}, "correct": "C"}, {"question": "A company is planning to move its data storage to a Cloud Service Provider (CSP). What is a primary security concern that should be addressed before proceeding with the migration?", "options": {"A": "Backup and recovery procedures", "B": "Data availability", "C": "Data encryption at rest", "D": "Bandwidth limitations"}, "correct": "A"}, {"question": "A new employee at a financial institution is authorized to access certain databases for customer service purposes. But, during routine monitoring, it is discovered that this employee has accessed databases unrelated to their job responsibilities. Which of the following access control models would most effectively prevent this issue in the future?", "options": {"A": "Mandatory Access Control (MAC)", "B": "Discretionary Access Control (DAC)", "C": "Attribute-Based Access Control (ABAC)", "D": "Role-Based Access Control (RBAC)"}, "correct": "C"}, {"question": "In terms of identity and access management, which strategy helps minimize the risk of privilege escalation?", "options": {"A": "Utilizing redundant hardware to increase availability", "B": "Deploying host-based Intrusion Detection Systems", "C": "Implementing a network-based firewall with deep packet inspection", "D": "Applying the principle of least privilege in access control"}, "correct": "D"}, {"question": "Which of the following is the PRIMARY goal of risk mitigation?", "options": {"A": "To transfer the potential threat to a third party", "B": "To minimize the impact of a potential threat", "C": "To maximize the potential benefit of a potential threat", "D": "To eliminate the potential threat"}, "correct": "B"}, {"question": "Which of the following is the MOST important factor in determining a data retention policy?", "options": {"A": "Security of the data", "B": "Cost of storage", "C": "Ease of access", "D": "Legal requirements"}, "correct": "D"}, {"question": "Your organization has recently suffered a major data breach due to an employee leaving sensitive information on their desk while they were away from their workstation. As a result, your organization has decided to implement a clean desk policy to prevent future incidents like this from occurring. As the IT security manager, part of your duties is developing and implementing this policy. Which of the following should be included in the clean desk policy?", "options": {"A": "Employees should cover their desks with a clean cloth when they are away from their workstation", "B": "Employees should lock their desks when they are away from their workstation", "C": "Employees should remove all sensitive documents and equipment from their desks when they are away from their workstation", "D": "Employees should only leave their desks when they are away from their workstation"}, "correct": "B"}, {"question": "A company wants to secure its on-premises network segment from unauthorized devices. Which of the following technologies should be implemented to meet this goal?", "options": {"A": "Vulnerability Scanner", "B": "Network Access Control (NAC)", "C": "Network Address Translation (NAT)", "D": "Web Application Firewall (WAF)"}, "correct": "C"}, {"question": "Zahra is explaining the IAAA model to one of the directors from payroll. Which of these is NOT one of the A's from the model?", "options": {"A": "Access.", "B": "Authentication.", "C": "Accountability.", "D": "Authorization."}, "correct": "A"}, {"question": "Which of the following is the FIRST principle that should be considered when assessing and implementing secure design principles in network architectures?", "options": {"A": "Availability", "B": "Integrity", "C": "Confidentiality", "D": "Least privilege"}, "correct": "D"}, {"question": "A company has recently suffered a data breach involving the unauthorized access of customer information. Which of the following measures would be most effective in preventing similar breaches in the future?", "options": {"A": "Utilize a Virtual Private Network (VPN) for remote access", "B": "Conduct regular security awareness training for employees", "C": "Install a Network Intrusion Detection System (NIDS)", "D": "Implement full-disk encryption for all company devices"}, "correct": "B"}, {"question": "In a federated login flow, which component is responsible for authenticating the user and producing the identity information that the application consumes?", "options": {"A": "The identity provider", "B": "The firewall performing network address translation", "C": "The relying party application", "D": "The database server storing application data"}, "correct": "A"}, {"question": "A system administrator notices an unusual spike in network traffic from an internal user's workstation. What should be the first step in response to this observation?", "options": {"A": "Update the workstation's antivirus software", "B": "Collect and analyze network traffic logs for suspicious activity", "C": "Isolate the network connection of the workstation", "D": "Contact the user to verify any legitimate large data transfers"}, "correct": "B"}, {"question": "What is the primary purpose of implementing network segmentation in an enterprise environment?", "options": {"A": "To simplify network management by consolidating devices", "B": "To improve network security by restricting access between network segments", "C": "To enhance network performance by reducing traffic", "D": "To enable easier monitoring of user behavior on the network"}, "correct": "B"}, {"question": "Which of the following is not a requirement for secure password creation?", "options": {"A": "The password must include special characters", "B": "The password must be changed every 30 days", "C": "The password must be at least 8 characters long", "D": "The password must not include personal information"}, "correct": "B"}, {"question": "What technique is commonly used by attackers to retrieve sensitive information like usernames and passwords through a fraudulent request masquerading as a legitimate entity?", "options": {"A": "Pharming", "B": "Spoofing", "C": "Phishing", "D": "Smishing"}, "correct": "B"}, {"question": "A company allows employees to access email from personal phones. Security wants to reduce account takeover risk without blocking legitimate users. Which conditional access policy best meets this goal?", "options": {"A": "Allow access from any device as long as the password meets complexity requirements", "B": "Require a password change at every sign in from any location", "C": "Block all access from mobile devices and require desktop use on the corporate network", "D": "Require Multi-Factor Authentication (MFA) only when the sign in risk is high or the device is not marked compliant"}, "correct": "C"}, {"question": "An organization has recently experienced a data breach due to a phishing attack targeting its employees. To prevent similar incidents, which of the following actions should the organization prioritize?", "options": {"A": "Deploying network Intrusion Detection Systems", "B": "Conduct regular security awareness training for employees", "C": "Implementing endpoint protection software on all devices", "D": "Enforcing mandatory password changes every 60 days"}, "correct": "D"}, {"question": "An organization discovers its network is being scanned for vulnerabilities. What is the most immediate action it should take?", "options": {"A": "Contact law enforcement to report the activity", "B": "Conduct a full audit of all systems and devices", "C": "Block the scanning IP addresses at the firewall", "D": "Update all software and firewall rules"}, "correct": "B"}, {"question": "As the security manager at a large financial institution, you are responsible for implementing measures to ensure that only authorized employees are able to access sensitive client information. What is a common method for ensuring that only authorized users have access to certain resources or systems?", "options": {"A": "Logical access control", "B": "Physical access control", "C": "Encryption", "D": "Network segmentation"}, "correct": "A"}, {"question": "A company's network is experiencing increased latency and unexpected traffic patterns. An analysis of log files indicates that a large number of packets are being sent to a specific port, resulting in a Denial of Service. What type of attack is likely being executed?", "options": {"A": "DDoS", "B": "Phishing", "C": "Man-in-the-Middle (MitM)", "D": "SQL Injection"}, "correct": "A"}, {"question": "Which of the following represents a major vulnerability when implementing a cloud-based application for sensitive data processing?", "options": {"A": "Limited scalability of the cloud service", "B": "Insufficient user training on cloud platform usage", "C": "High latency in data access", "D": "Lack of encryption in data transmission"}, "correct": "A"}, {"question": "An organization wants to prevent users from reusing their last several passwords. Which configuration best supports that goal?", "options": {"A": "Increase the account lockout duration to 30 minutes after five failed attempts", "B": "Set a maximum password age of 45 days and require a symbol in every password", "C": "Enable password history and remember the last 24 passwords for each account", "D": "Require passwords to be stored using salted hashing instead of encryption"}, "correct": "D"}, {"question": "An organization has recently adopted a cloud-based solution to store confidential data. What should be the primary concern regarding the security of this data?", "options": {"A": "Data access control and encryption", "B": "Availability of internet connectivity for remote access", "C": "The geographic location of the cloud's data centers", "D": "The bandwidth between the organization and the cloud service"}, "correct": "C"}, {"question": "Following a data breach, a company decides to strengthen its password policies. Which of the following measures is most likely to enhance password security?", "options": {"A": "Using dictionary words to ensure memorability", "B": "Implementing Multi-Factor Authentication (MFA)", "C": "Encouraging users to change passwords monthly", "D": "Allowing password reuse after 90 days"}, "correct": "B"}, {"question": "A company is implementing a remote access solution for its employees. Which of the following should be used to ensure secure communication over an insecure network?", "options": {"A": "VLAN (Virtual Local Area Network)", "B": "DHCP (Dynamic Host Configuration Protocol)", "C": "VPN (Virtual Private Network)", "D": "NAT (Network Address Translation)"}, "correct": "C"}, {"question": "An organization has recently transitioned to a Cloud Service Provider (CSP) to store sensitive data. Which of the following would best ensure that data remains secure while in transit?", "options": {"A": "Applying authentication protocols", "B": "Implementing data access policies", "C": "Signing an NDA with the cloud provider", "D": "Using Transport Layer Security (TLS)"}, "correct": "D"}, {"question": "During an access review, you notice one employee has both the purchasing requester role and the purchasing approver role. The manager argues the employee is trustworthy and has been with the company for years. What is the best security response?", "options": {"A": "Remove one of the roles or add an independent approval step to restore separation of duties", "B": "Keep the access as is and document the manager approval as a compensating control", "C": "Require the employee to sign an acceptable use policy specific to purchasing", "D": "Rotate the employee password more frequently to reduce the risk of compromise"}, "correct": "A"}, {"question": "A payroll specialist temporarily covers for a manager during a leave of absence. Three months after the manager returns, the specialist can still approve new vendors and release payments. What is the most appropriate security concern to raise?", "options": {"A": "The specialist should be moved to a separate network segment to reduce risk", "B": "The specialist's account is likely compromised because the permissions changed", "C": "The organization should disable all delegation features to prevent future issues", "D": "Role creep has increased the specialist's privileges beyond what the job currently requires"}, "correct": "D"}, {"question": "Your organization uses a cloud application that supports access packages with expiration. A department wants vendors to keep access indefinitely because projects often restart. What is the best security response that still supports the business need?", "options": {"A": "Set access to expire and require re-approval when work resumes", "B": "Allow indefinite access only if the vendor uses Multi-Factor Authentication (MFA)", "C": "Create a single vendor role with broad permissions to avoid repeated requests", "D": "Approve indefinite access but require quarterly password changes"}, "correct": "A"}, {"question": "What method should be used to verify a user's identity based on their unique biological characteristics?", "options": {"A": "Biometric authentication", "B": "Two-Factor Authentication (2FA)", "C": "Password authentication", "D": "Token-based authentication"}, "correct": "D"}, {"question": "What is the primary purpose of implementing preventive controls in an organization's security framework?", "options": {"A": "To identify and assess vulnerabilities within systems", "B": "To ensure compliance with legal and regulatory requirements", "C": "To detect and respond to security incidents in real time", "D": "To avoid incidents by stopping threats before they can impact the system"}, "correct": "A"}, {"question": "What is a key advantage of Role-Based Access Control (RBAC) over Discretionary Access Control (DAC)?", "options": {"A": "Facilitates Separation of Duties (SOD) within an organization", "B": "Provides more granular control over individual file access", "C": "Allows users to set their own permissions on files they own", "D": "Easier to manage access permissions for individual users"}, "correct": "A"}, {"question": "After a data exposure incident in a cloud environment, leadership asks if the cloud provider might share some responsibility or costs, but also wants to know who is ultimately accountable for the organization's data protection decisions. Which response is most appropriate from a security professional?", "options": {"A": "Liability is determined solely by if the service had broad network access enabled", "B": "The organization is ultimately responsible for protecting its data, even if the provider may bear some responsibility depending on circumstances", "C": "The provider is always fully liable for any breach involving systems hosted in its data centers", "D": "The organization is not responsible if the provider offers measured service and usage reporting"}, "correct": "B"}, {"question": "A security analyst is implementing a Mobile Device Management (MDM) solution as part of a new BYOD policy. What feature should the MDM solution prioritize to enhance security?", "options": {"A": "Remote device wipe", "B": "User behavior analytics", "C": "Device geolocation", "D": "Application whitelisting"}, "correct": "A"}, {"question": "To mitigate the risk of data interception during wireless transmission, which security measure is most effective?", "options": {"A": "Disabling SSID broadcasting to hide the network", "B": "Implementing WPA3 encryption for wireless traffic", "C": "Utilizing MAC filtering to control device access to the network", "D": "Using a captive portal to authenticate users"}, "correct": "B"}, {"question": "A university allows each department to manage its own user accounts and access for local applications. The security team is concerned about visibility into who has access to sensitive research data. What is the most likely security drawback of this decentralized identity management model?", "options": {"A": "It prevents the use of Multi-Factor Authentication (MFA) across the organization", "B": "It guarantees that all users will have the same access rights in every system", "C": "It eliminates the need for account deprovisioning when staff leave", "D": "It makes it harder to maintain consistent access reviews and auditing across departments"}, "correct": "D"}, {"question": "After successfully mitigating a security incident, the Incident Response team begins writing their report documenting what happened. A senior team member points out that this approach has a significant weakness. What is the PRIMARY concern with waiting until after mitigation to begin reporting?", "options": {"A": "Reporting after mitigation violates the NIST 800-61 framework entirely", "B": "Important details from the detection and response phases may be forgotten or lost", "C": "Legal counsel must approve all reports before mitigation begins", "D": "The report will be too short without including the preparation phase"}, "correct": "B"}, {"question": "A security analyst needs to convey potential threats stemming from third-party vendors to upper management. What is the most effective security tool or method for demonstrating these risks?", "options": {"A": "Penetration testing", "B": "Security Information and Event Management (SIEM) solution", "C": "Network vulnerability scanner", "D": "Risk register"}, "correct": "D"}, {"question": "A network administrator wants to ensure that unauthorized devices are not connected to the corporate network. Which of the following tools would best achieve this objective?", "options": {"A": "Network Access Control (NAC)", "B": "Virtual Private Network (VPN)", "C": "Intrusion Prevention System (IPS)", "D": "Antivirus software"}, "correct": "A"}, {"question": "Which of the following is the MOST likely threat to cloud storage types?", "options": {"A": "Cyber attacks", "B": "Physical damage to servers", "C": "Natural disasters", "D": "Insider threats"}, "correct": "A"}, {"question": "A CISO asks for a quarterly briefing describing which threat actors are targeting the company's industry and how their methods are evolving. Which output best aligns with the request?", "options": {"A": "A list of current phishing domains and their registration details", "B": "A set of SIEM correlation rules for DNS tunneling", "C": "A packet capture showing command and control traffic", "D": "A report summarizing adversary motivations, industry targeting, and emerging attack patterns"}, "correct": "D"}, {"question": "An organization uses SD-WAN with three internet connections at its headquarters, including fiber, DSL, and satellite. During a citywide power outage, the fiber and DSL connections go down because the service provider substations lose power. The organization's own facility stays online through its backup generator. What happens to the organization's connectivity?", "options": {"A": "The organization must manually switch to the satellite connection by reconfiguring the router", "B": "All connectivity is lost because SD-WAN requires at least two active connections", "C": "The SD-WAN shuts down all connections to prevent data corruption", "D": "The SD-WAN automatically fails over to the satellite connection, maintaining operations with potentially reduced speed"}, "correct": "D"}, {"question": "A privileged access management tool offers two configurations for administrators. Option A grants admin rights for 60 minutes after approval. Option B grants admin rights until the user manually checks them back in. Which configuration better supports Just-in-Time (JIT) access principles?", "options": {"A": "Option A because it eliminates the need for logging", "B": "Option B because it allows longer work sessions without interruption", "C": "Option A because the privilege is time-bound and ends automatically", "D": "Option B because it relies on user responsibility and reduces automation complexity"}, "correct": "C"}, {"question": "In a security audit, it is discovered that multiple users frequently share their credentials to access a shared service. What is a viable solution to prevent this practice?", "options": {"A": "Assigning individual user accounts", "B": "Deploying a Single Sign-On (SSO) system", "C": "Implementing Multi-Factor Authentication (MFA)", "D": "Conducting regular password audits"}, "correct": "A"}, {"question": "An operating system security engineer is evaluating a model where subjects are also treated as objects, and where a finite set of procedures can edit access rights in an access matrix using operations like enter right and delete right. Which model is being referenced?", "options": {"A": "Graham-Denning model", "B": "Harrison-Ruzzo-Ullman (HRU)", "C": "Bell-LaPadula model", "D": "Biba model"}, "correct": "B"}, {"question": "When designing a security strategy, what is the primary advantage of implementing network segmentation?", "options": {"A": "Enhances monitoring capabilities with centralized logging", "B": "Allows for easier deployment of software updates", "C": "Restricts lateral movement by isolating sensitive data", "D": "Increases network performance by reducing collisions"}, "correct": "C"}, {"question": "A cybersecurity engineer is evaluating different Disaster Recovery strategies. Which strategy involves maintaining complete redundant copies of critical systems at a geographically remote location that can be quickly switched over to in a disaster?", "options": {"A": "Hot site", "B": "Warm site", "C": "Backup as a Service", "D": "Cold site"}, "correct": "A"}, {"question": "A compliance team asks which data categories should be prioritized for post-quantum protections given limited budget. Which data characteristic most strongly increases the urgency to adopt quantum-resistant cryptography?", "options": {"A": "Short lived session data that loses value within minutes", "B": "High availability requirements for real-time systems", "C": "Data that is already public but frequently accessed", "D": "Long confidentiality lifetime where exposure years later would still be harmful"}, "correct": "D"}, {"question": "As the Chief Information Security Officer (CISO) in a large technology company, you are developing an IT security policy that includes the use of specific IP and port ranges to regulate inbound and outbound traffic and ensure the security of your organization's network. How should you structure the use of ports in your IT security policy to ensure optimal network security while maintaining functionalities for all necessary applications?", "options": {"A": "Assign ephemeral ports (49152 to 65535) for web browsers and non-critical applications to isolate potential risks.", "B": "Restrict outbound traffic to only well-known ports (0 to 1023) to ensure recognized protocols are used.", "C": "Implement a policy that allows for the controlled use of all port types, balancing security with functionality needs.", "D": "Allow unrestricted use of registered ports (1024 to 49151) to accommodate vendor-specific applications."}, "correct": "C"}], "set2": [{"question": "Which of these could be an example of a type of corrective access control?", "options": {"A": "Encrypted transmission of sensitive data", "B": "Mandatory access controls for data protection", "C": "Biometric systems for authentication", "D": "Installation of antivirus software after a virus infection"}, "correct": "D"}, {"question": "What is the MOST common type of backup used in cybersecurity?", "options": {"A": "Full backups", "B": "Differential backups", "C": "Incremental backups", "D": "Snapshot backups"}, "correct": "C"}, {"question": "In a new implementation, we have chosen to use a Redundant Array of Independent Disks (RAID) 0 on a server, what does it tell us about the disk configuration?", "options": {"A": "The server has a single disk, and data is mirrored", "B": "The server has multiple disks, but data is mirrored", "C": "The server has multiple disks, but no data redundancy", "D": "The server has a single disk"}, "correct": "C"}, {"question": "In our risk analysis, we are looking at the risk. What would that comprise?", "options": {"A": "The amount of money we have to spend on security measures", "B": "The potential damage to our organization", "C": "The likelihood of a threat exploiting a vulnerability", "D": "The expected return on investment for security measures"}, "correct": "C"}, {"question": "A security administrator is configuring their organization's wireless network to maximize security. Which of the following measures provides the strongest level of wireless security?", "options": {"A": "Enabling WEP encryption", "B": "Hiding the SSID of the network", "C": "Using WPA2-Enterprise", "D": "Implementing MAC address filtering"}, "correct": "C"}, {"question": "You are the Chief Information Security Officer (CISO) of a large e-commerce company that is considering an upgrade from a traditional Security Information and Event Management (SIEM) system to a Security Orchestration, Automation, and Response (SOAR) system. The major consideration is to enhance incident response capabilities using the Al-powered response mechanism in the SOAR system. What is the major advantage of adopting a SOAR system over a traditional SIEM system?", "options": {"A": "The SOAR system can provide real-time monitoring.", "B": "The SOAR system can automatically respond to security incidents.", "C": "The SOAR system can visualize network traffic more effectively.", "D": "The SOAR system can provide more comprehensive log data."}, "correct": "B"}, {"question": "A contractor is hired for a two week project and needs access to a ticketing system only when assigned tasks. Which approach best aligns with Just-in-Time (JIT) provisioning?", "options": {"A": "Create a standard contractor account on day one and disable it after the project ends", "B": "Share a team account with a rotating password to avoid creating individual accounts", "C": "Grant access through a standing group membership that is reviewed quarterly", "D": "Provision access only when a manager approves a specific task assignment and set it to expire automatically"}, "correct": "D"}, {"question": "What is the primary objective of implementing a Demilitarized Zone (DMZ) in a network architecture?", "options": {"A": "To provide a dedicated environment for secure data storage", "B": "To isolate internal systems from direct access by external users", "C": "To monitor and log network traffic for anomaly detection", "D": "To create a secure encryption pathway between internal and external networks"}, "correct": "B"}, {"question": "Which of the following is a method of verifying a sender's identity and ensuring message data has not been tampered with during transmission?", "options": {"A": "Digital Signature", "B": "Data Encryption", "C": "Hashing", "D": "Compression"}, "correct": "A"}, {"question": "An organization has detected suspicious outbound network traffic on a non-standard port. Which security control would most effectively help prevent data exfiltration through this channel?", "options": {"A": "Implementing network segmentation", "B": "Enhancing endpoint protection with antivirus software", "C": "Enforcing a strict outbound firewall policy", "D": "Deploying a network-based Intrusion Detection System"}, "correct": "C"}, {"question": "How can an organization best defend against social engineering attacks?", "options": {"A": "Limiting internet access to a restricted list of websites", "B": "Implementing antivirus software across all systems", "C": "Conducting regular security awareness training for all employees", "D": "Installing a firewall with intrusion detection capabilities"}, "correct": "C"}, {"question": "Which layer of the OSI reference model is responsible for ensuring the integrity and reliability of transmitted data?", "options": {"A": "Session layer", "B": "Transport layer", "C": "Network layer", "D": "Presentation layer"}, "correct": "B"}, {"question": "What is the primary purpose of using a mantrap in a security environment?", "options": {"A": "To enhance cryptographic key management processes", "B": "To provide a fail-safe mechanism for securing data loss", "C": "To control access to physical areas by only allowing one person to enter at a time", "D": "To detect unauthorized wireless devices within a secure facility"}, "correct": "C"}, {"question": "We have implemented contactless ID cards in our organization. Which type of technology do they use?", "options": {"A": "Magnetic stripe technology", "B": "Radio-frequency identification (RFID) technology", "C": "Optical character recognition (OCR) technology", "D": "Barcode technology"}, "correct": "B"}, {"question": "A company recently received reports of phishing emails targeting its employees. The security team has implemented email filtering to mitigate these threats. Despite this, some phishing emails still occasionally reach the employees. What additional measure would best strengthen the company's defenses against phishing?", "options": {"A": "Implementing Multi-Factor Authentication (MFA) for all employee accounts", "B": "Increasing the sensitivity of the existing email filtering solution", "C": "Deploying endpoint detection and response (EDR) solutions", "D": "Conduct regular phishing awareness training sessions"}, "correct": "D"}, {"question": "During a network penetration test, an internal team discovers a misconfiguration that allows unauthorized access to confidential data. Which of the following is the next best step the team should take?", "options": {"A": "Attempt to access more sensitive systems", "B": "Immediately fix the misconfiguration", "C": "Report the findings to management", "D": "Document the process for future reference"}, "correct": "C"}, {"question": "When we list the Minimum Operating Requirements (MOR) for a system in our Business Impact Analysis (BIA), what should it contain?", "options": {"A": "The minimum security controls required to protect the system.", "B": "The minimum hardware and software specifications required to run the system.", "C": "The minimum amount of data storage required for the system.", "D": "The minimum number of users required to access the system."}, "correct": "B"}, {"question": "The CFO has requested a review of Thor Teaches.com's security measures in order to comply with industry regulations. What should be the first step in ensuring the security of the organization's information systems?", "options": {"A": "Updating software and hardware", "B": "Implementing security protocols", "C": "Conducting a threat assessment", "D": "Conducting a risk assessment"}, "correct": "D"}, {"question": "An organization needs to ensure that only authorized employees can access critical financial data. Which security control will most effectively accomplish this goal?", "options": {"A": "Security Information and Event Management (SIEM)", "B": "Network segmentation", "C": "Data encryption", "D": "Role-Based Access Control (RBAC)"}, "correct": "D"}, {"question": "What is the name of the position responsible for overseeing an organization's security policies and procedures?", "options": {"A": "Chief Operations Officer", "B": "Chief Executive Officer", "C": "Chief Information Security Officer", "D": "Chief Information Officer"}, "correct": "C"}, {"question": "A security manager notices that the number of failed login attempts across the organization has increased by 300% over the past month. The manager uses this metric to alert senior leadership that a credential-based attack may be developing and recommends strengthening authentication controls. What type of indicator is the security manager using?", "options": {"A": "Key Risk Indicator", "B": "Key Goal Indicator", "C": "Key Performance Indicator", "D": "Service Level Indicator"}, "correct": "A"}, {"question": "In the context of risk management, which action best represents risk transference?", "options": {"A": "Accepting the risk and allocating no further resources", "B": "Transferring the risk to an insurance company", "C": "Implementing additional security measures to reduce the risk", "D": "Ceasing operations that involve high-risk activities"}, "correct": "B"}, {"question": "An organization is concerned about potential insider threats. Which of the following strategies is most effective in mitigating this risk?", "options": {"A": "Utilizing Endpoint Detection and Response (EDR) tools", "B": "Implementing a strong Disaster Recovery Plan (DRP)", "C": "Conducting regular employee security training", "D": "Enforcing strict physical security measures"}, "correct": "C"}, {"question": "An organization is looking to improve its authentication mechanisms to reduce the risk of unauthorized access. Which of the following solutions can enhance authentication security by requiring both something the user knows and something the user has?", "options": {"A": "Biometric-based authentication", "B": "Multi-Factor Authentication (MFA) with a smart card and PIN", "C": "Single Sign-On (SSO) implementation", "D": "Server-side digital certificates"}, "correct": "B"}, {"question": "You are the Chief Information Security Officer (CISO) of a multinational corporation that is planning to expand its network infrastructure to support the growing needs of its digital transformation project. The organization currently uses CAT6 unshielded twisted pair (UTP) cables in most office environments. But, as part of the network expansion, you are considering the use of shielded twisted pair (STP) cables in certain areas where higher data security is needed. What is the most critical factor to consider when deciding to use shielded twisted pair (STP) cables over unshielded twisted pair (UTP) cables in specific areas of the network?", "options": {"A": "The need for greater security against electromagnetic interference (EMI) and crosstalk in certain areas", "B": "The flexibility and ease of installation of the cables", "C": "The cost difference between STP and UTP cables", "D": "The category of the existing UTP cables being used"}, "correct": "A"}, {"question": "Which type of attack exploits a weakness in the implementation of cryptographic systems by analyzing the time taken to execute cryptographic algorithms?", "options": {"A": "Cross-site scripting attack", "B": "Cache-timing attack", "C": "SQL injection attack", "D": "Man-in-the-Middle (MitM) attack"}, "correct": "B"}, {"question": "Which of the following is the MOST effective NGFW (Next-Generation Firewall) feature in protecting against malware?", "options": {"A": "Packet inspection", "B": "Deep packet inspection", "C": "Antivirus", "D": "URL filtering"}, "correct": "C"}, {"question": "A company has recently experienced a data breach due to unauthorized access. Which security measure can best help prevent unauthorized users from accessing sensitive information in the future?", "options": {"A": "Installing antivirus software across all systems", "B": "Deploying network Intrusion Detection Systems (NIDS)", "C": "Implementing multifactor authentication (MFA)", "D": "Conducting regular security awareness training"}, "correct": "C"}, {"question": "What is a common error in access control systems that can lead to unauthorized access?", "options": {"A": "Inadequate password policies", "B": "Lack of proper encryption protocols", "C": "Ineffective user training", "D": "Incorrectly configured access controls"}, "correct": "D"}, {"question": "Which of the following is the correct definition of MAD (Maximum Allowable Downtime)?", "options": {"A": "The amount of time a system can be offline without violating any service level agreements", "B": "The maximum amount of time a system can be offline for maintenance", "C": "The shortest amount of time a system can be offline for maintenance", "D": "The longest amount of time a system can be offline without causing significant impact to the organization"}, "correct": "D"}, {"question": "Which of the following indicators is the BEST measure of an organization's security posture?", "options": {"A": "Implementation of the latest cybersecurity technologies", "B": "Number of security incidents in a year", "C": "The budget allocated to the cybersecurity department", "D": "Maturity of the organization's Information Security Management System (ISMS)"}, "correct": "D"}, {"question": "A hospital grants its doctors technical access to every patient record in the system. But, doctors are only permitted to view the records of patients they are actively treating. Which access control principle does this restriction BEST represent?", "options": {"A": "Need-to-know", "B": "Role-based access control", "C": "Least privilege", "D": "Mandatory access control"}, "correct": "A"}, {"question": "An administrator needs to segment a network to improve security and manageability. What type of solution can be implemented to achieve logical isolation without needing additional physical hardware?", "options": {"A": "Setting up a DMZ", "B": "Implementing VLANS", "C": "Deploying host-based firewalls", "D": "Enabling MAC filtering"}, "correct": "B"}, {"question": "How can an organization most effectively mitigate the risk of sensitive data leakage during data transmission over the internet?", "options": {"A": "Utilizing encryption protocols like TLS", "B": "Deploying endpoint protection on all devices", "C": "Implementing a firewall to block unauthorized access", "D": "Conducting regular security awareness training"}, "correct": "A"}, {"question": "What principle is used to ensure that no single employee has the ability to execute critical processes entirely on their own?", "options": {"A": "Job rotation", "B": "Separation of Duties (SOD)", "C": "Dual control", "D": "Mandatory vacation"}, "correct": "B"}, {"question": "An organization is implementing a new password policy to improve security. Which of the following elements should be included to ensure strong password management?", "options": {"A": "Allowing password reuse after ten changes", "B": "Mandatory password expiration every 30 days", "C": "Implementing password complexity requirements", "D": "Requiring user-generated password hints"}, "correct": "C"}, {"question": "A new employee account is created with default permissions that include access to a confidential shared folder. Which risk is most directly introduced by this default access?", "options": {"A": "Sensitive information could be exposed through accidental browsing or unintended file sharing", "B": "The user may be unable to authenticate to the domain due to permission conflicts", "C": "The account will be forced to use Multi-Factor Authentication (MFA), increasing help desk calls", "D": "The user's workstation will automatically install unauthorized software"}, "correct": "A"}, {"question": "Your organization is developing a comprehensive strategy for securing its sensitive data, especially its customer records. Which strategy should you recommend protecting the organization's sensitive data through the implementation of multiple overlapping security controls?", "options": {"A": "ISO 27799", "B": "Defense in Depth", "C": "ISO 27004", "D": "OCTAVE"}, "correct": "B"}, {"question": "A company wants to improve security by verifying the integrity of its data in transmission across its networks. Which of the following protocols should the company implement?", "options": {"A": "Internet Control Message Protocol (ICMP)", "B": "Transport Layer Security (TLS)", "C": "Simple Network Management Protocol (SNMP)", "D": "File Transfer Protocol (FTP)"}, "correct": "B"}, {"question": "Which of the following solutions is most appropriate for preventing data breaches caused by external attackers gaining direct access to an internal network segment?", "options": {"A": "Network segmentation", "B": "Secure software development lifecycle (SDLC)", "C": "Multi-Factor Authentication (MFA)", "D": "Distributed Denial of Service (DDoS) protection"}, "correct": "A"}, {"question": "An organization is concerned about threats from external attackers gaining unauthorized access to its internal network. Which of the following would be the most effective measure to mitigate this risk?", "options": {"A": "Implementing a robust firewall with strict Access Control Lists (ACLs)", "B": "Conducting frequent social engineering awareness training", "C": "Regularly updating and patching all software applications", "D": "Installing antivirus software on internal systems"}, "correct": "A"}, {"question": "Which of the following is the LEAST secure topology for a network?", "options": {"A": "Bus topology", "B": "Mesh topology", "C": "Ring topology", "D": "Star topology"}, "correct": "A"}, {"question": "An organization is concerned about attackers capturing sensitive data as it moves across the network. Which technology can best ensure the data remains confidential during transmission?", "options": {"A": "A Virtual Private Network (VPN)", "B": "Intrusion Prevention System (IPS)", "C": "Two-Factor Authentication (2FA)", "D": "Network segmentation"}, "correct": "A"}, {"question": "Which of the following should be included in the Business Continuity Planning (BCP) as the FIRST priority for maintaining business operations?", "options": {"A": "Maintaining communication channels", "B": "Providing employee support", "C": "Protecting company assets", "D": "Ensuring customer satisfaction"}, "correct": "A"}, {"question": "Which type of access control model would we use if availability is MOST important?", "options": {"A": "Discretionary Access Control (DAC)", "B": "Rule-Based Access Control (RuBAC)", "C": "Role-Based Access Control (RBAC)", "D": "Mandatory Access Control (MAC)"}, "correct": "A"}, {"question": "Consider a scenario where an organization is implementing a new Multi-Factor Authentication (MFA) system. What is the main goal of integrating MFA into the user's login process?", "options": {"A": "Reducing the risk of unauthorized access to systems", "B": "Enhancing User Experience (UX) by streamlining the login process", "C": "Allowing users to bypass traditional password requirements", "D": "Increasing the complexity of password policies"}, "correct": "A"}, {"question": "What type of access control model is based on the concept of a trusted third party for authentication?", "options": {"A": "Role-Based Access Control (RBAC)", "B": "Rule-Based Access Control (RuBAC)", "C": "Federated access control", "D": "Multi-Factor Authentication (MFA)"}, "correct": "C"}, {"question": "Which of the following is the FIRST security principle that should be implemented when developing a secure system?", "options": {"A": "Confidentiality", "B": "Integrity", "C": "Availability", "D": "Least Privilege"}, "correct": "D"}, {"question": "As the lead security consultant for a large corporation, you are working with the HR department to educate employees on cybersecurity best practices. Which of the following is least relevant in managing cybersecurity risks?", "options": {"A": "Performing regular software updates", "B": "Identifying and prioritizing assets", "C": "Implementing security measures to prevent threats", "D": "Evaluating and mitigating vulnerabilities"}, "correct": "B"}, {"question": "A data center technician reports that the facility has been experiencing periods of reduced voltage from the utility provider lasting several hours at a time. Which power fluctuation term BEST describes this condition?", "options": {"A": "Blackout", "B": "Spike", "C": "Sag", "D": "Brownout"}, "correct": "D"}, {"question": "Which of the following is the MOST complex component of L2TP (Layer 2 Tunneling Protocol)?", "options": {"A": "Tunnel Management", "B": "Handshake", "C": "Encapsulation", "D": "Authentication"}, "correct": "A"}, {"question": "A global logistics company is experiencing a critical personnel shortage where only one person has the skillset to carry out certain critical IT security jobs. What is the most effective way to address this issue?", "options": {"A": "Cross-train staff to cover multiple roles", "B": "Automate tasks to reduce the workforce needed", "C": "Hire consultants to fill the gaps in the short term", "D": "Increase salaries to attract new talent"}, "correct": "A"}, {"question": "What is the main difference between a zero-day exploit and a ransomware attack?", "options": {"A": "A zero-day exploit is a short-term vulnerability, while a ransomware attack is a long-term threat", "B": "A zero-day exploit is carried out by hackers, while ransomware results from a malicious email attachment", "C": "A zero-day exploit targets vulnerabilities in software, while ransomware encrypts data and demands payment", "D": "A zero-day exploit is malware, while ransomware is phishing"}, "correct": "C"}, {"question": "Which type of malware is specifically designed to take control of a system and turn it into a \"zombie\" machine?", "options": {"A": "Botnet", "B": "Rootkit", "C": "Ransomware", "D": "Trojan horse"}, "correct": "A"}, {"question": "What is the primary purpose of deploying Network Access Control (NAC)?", "options": {"A": "Monitoring network traffic for anomalies", "B": "Segmenting the network for performance optimization", "C": "Encrypting data in transit", "D": "Authenticating users before granting network access"}, "correct": "D"}, {"question": "Which security measure should be implemented FIRST to prevent data breaches?", "options": {"A": "Firewall", "B": "Antivirus software", "C": "Encryption", "D": "Employee training"}, "correct": "A"}, {"question": "What does data remanence refer to?", "options": {"A": "The process of encrypting data", "B": "The ability of data to be accessed by unauthorized users", "C": "The process of backing up data", "D": "The property of data to remain in storage even after it has been deleted"}, "correct": "D"}, {"question": "An organization plans to implement a VPN for remote workers. Which type offers a secure and seamless experience without requiring configuration on user devices?", "options": {"A": "PPTP VPN", "B": "L2TP VPN", "C": "IPSec VPN", "D": "SSL VPN"}, "correct": "D"}, {"question": "An organization needs to maintain confidentiality and integrity of sensitive data transmitted over an internal network. Which solution most effectively achieves this?", "options": {"A": "Applying Transport Layer Security (TLS)", "B": "Implementing network segmentation", "C": "Using a Virtual Private Network (VPN)", "D": "Deploying an Intrusion Detection System (IDS)"}, "correct": "A"}, {"question": "A company uses a mobile authenticator app and wants to reduce users approving prompts without thinking. Which choice best reduces this risk?", "options": {"A": "Require number matching before approval", "B": "Replace tokens with knowledge-based questions", "C": "Allow unlimited enrolled devices", "D": "Use one-tap push approvals"}, "correct": "B"}, {"question": "Which factor is MOST important when selecting guards for an access control system?", "options": {"A": "Physical fitness", "B": "Training and experience", "C": "Personality and attitude", "D": "Height and weight"}, "correct": "B"}, {"question": "An employee reports that a coworker shared company login credentials with a friend outside the company. What should the IT security manager do?", "options": {"A": "Immediately terminate the employee", "B": "Report the incident to the company's code of ethics committee", "C": "Ignore the report", "D": "Give the employee a warning without reporting it"}, "correct": "B"}, {"question": "Which method is MOST effective for ensuring data integrity?", "options": {"A": "Encrypting data", "B": "Firewall implementation", "C": "Data hashing", "D": "Regular backups"}, "correct": "C"}, {"question": "What is the main purpose of an Information Security Governance Framework?", "options": {"A": "To provide a structured approach to implementing and maintaining security controls", "B": "To ensure compliance with industry regulations", "C": "To protect the confidentiality, integrity, and availability of information assets", "D": "To establish a security culture"}, "correct": "A"}, {"question": "What is a critical component of a strong Identity and Access Management (IAM) strategy?", "options": {"A": "Conducting regular security training", "B": "Using network firewalls", "C": "Implementing a VPN", "D": "Deploying multifactor authentication (MFA)"}, "correct": "D"}, {"question": "A security team is creating a break-glass account for a critical SaaS platform. Which permission design is most appropriate?", "options": {"A": "Grant only the minimum privileges needed to restore normal administrative access", "B": "Provide full administrative rights across all tenants", "C": "Give the account the same permissions as the CEO", "D": "Assign read-only access"}, "correct": "A"}], "set3": [{"question": "What is the most effective method to prevent a Man-in-the-Middle (MitM) attack on a corporate Wi-Fi network?", "options": {"A": "Implementing WPA3 encryption", "B": "Disabling SSID broadcasting", "C": "Using MAC address filtering", "D": "Employing static IP addressing"}, "correct": "A"}, {"question": "If digital forensic evidence will be used in court, what should the evidence NOT be?", "options": {"A": "Verified through a documented chain of custody", "B": "Insufficiently documented", "C": "Obtained through proper legal channels", "D": "Unaltered and in its original state"}, "correct": "B"}, {"question": "What is the purpose of a Disaster Recovery Plan (DRP)?", "options": {"A": "To ensure IT systems continue operating during a disaster", "B": "To restore IT systems after a disaster", "C": "To monitor IT system performance", "D": "To prevent disasters from occurring"}, "correct": "B"}, {"question": "A manager temporarily allows one employee to both create vendors and approve payments. What is the primary collusion-related risk?", "options": {"A": "The payment system will automatically block transactions", "B": "Auditors will no longer be able to review transactions", "C": "The employee will be unable to complete tasks on time", "D": "Fraud can occur by creating fake vendors and approving payments without independent review"}, "correct": "D"}, {"question": "A company wants to minimize insider threats. Which action should be a priority?", "options": {"A": "Install security cameras", "B": "Implement MFA", "C": "Conduct regular security awareness training", "D": "Restrict USB devices"}, "correct": "C"}, {"question": "Which personnel should be trained FIRST in Disaster Recovery procedures?", "options": {"A": "Sales representatives", "B": "Human resources managers", "C": "Security guards", "D": "IT staff"}, "correct": "D"}, {"question": "Which encryption method should be used to protect wireless communications from MitM attacks?", "options": {"A": "WEP", "B": "WPA3", "C": "DES", "D": "TKIP"}, "correct": "B"}, {"question": "Which metric BEST measures whether user security awareness efforts are working?", "options": {"A": "Number of employees who clicked phishing simulation links", "B": "Number of security policies published", "C": "Number of firewall rules", "D": "Total number of emails received"}, "correct": "A"}, {"question": "Which technology best prevents outside attackers from gaining unauthorized access to a network perimeter?", "options": {"A": "Data Loss Prevention (DLP)", "B": "Network firewall", "C": "Antivirus software", "D": "Intrusion Detection System (IDS)"}, "correct": "B"}, {"question": "User accounts are not being disabled promptly after employees leave the company. What should be implemented?", "options": {"A": "A formalized exit procedure with HR and IT collaboration", "B": "A Data Loss Prevention solution", "C": "Security awareness training", "D": "A password management tool"}, "correct": "A"}, {"question": "What is a common characteristic of compensating controls?", "options": {"A": "They can substitute for controls required by regulations or standards", "B": "They provide the primary line of defense", "C": "They must always cost less than primary controls", "D": "They are always preventive controls"}, "correct": "A"}, {"question": "What is the MOST effective way to prevent MitM attacks in an IPSec implementation?", "options": {"A": "Enabling encryption on all communications", "B": "Using a pre-shared key", "C": "Disabling encryption algorithms", "D": "Using a digital certificate for authentication"}, "correct": "D"}, {"question": "A company introduces self-service password resets. Which design choice best reduces account takeover risk?", "options": {"A": "Use knowledge-based questions", "B": "Send reset links to email only", "C": "Allow unlimited reset attempts", "D": "Require a second factor and rate-limit reset attempts"}, "correct": "D"}, {"question": "Which type of backup copies only data that has changed since the last backup of any type?", "options": {"A": "Full backup", "B": "Differential backup", "C": "Incremental backup", "D": "Snapshot"}, "correct": "A"}, {"question": "Which security principle requires users to have only the minimum permissions necessary to perform their job?", "options": {"A": "Defense in Depth", "B": "Least Privilege", "C": "Separation of Duties", "D": "Need to Know"}, "correct": "B"}, {"question": "Which control is designed to detect security incidents rather than prevent them?", "options": {"A": "Firewall", "B": "Antivirus", "C": "Intrusion Detection System (IDS)", "D": "Access Control List (ACL)"}, "correct": "C"}, {"question": "What is the primary purpose of a Security Information and Event Management (SIEM) system?", "options": {"A": "Encrypt network traffic", "B": "Aggregate and analyze security logs and events", "C": "Replace firewalls", "D": "Manage user passwords"}, "correct": "A"}, {"question": "What technique would a security administrator recommend to ensure that only authorized personnel can read sensitive files on a network share?", "options": {"A": "Setting file permissions and using Access Control List (ACL)", "B": "Implementing firewall rules to restrict access", "C": "Regularly updating antivirus signatures on network computers", "D": "Monitoring network traffic with an Intrusion Detection System (IDS)"}, "correct": "A"}, {"question": "When we design our defense in depth, we use multiple overlapping controls. Which of these is a type of preventative access control?", "options": {"A": "Detective", "B": "Deterrent", "C": "Technical", "D": "Corrective"}, "correct": "C"}, {"question": "Which of the following is a social engineering technique that can be used to gain unauthorized access to sensitive information?", "options": {"A": "DoS attacks", "B": "SQL Injection", "C": "Phishing attacks", "D": "DNS spoofing"}, "correct": "C"}, {"question": "What would we encrypt when we are dealing with sensitive data?", "options": {"A": "Wireless access points.", "B": "Laptops.", "C": "USB drives.", "D": "All of these."}, "correct": "D"}, {"question": "Which security measure can best limit the impact of phishing attacks on employees?", "options": {"A": "Implementing two-factor authentication", "B": "Installing antivirus software", "C": "Mandatory security training sessions", "D": "Deploying an Intrusion Detection System (IDS)"}, "correct": "A"}, {"question": "A risk committee asks for a concise definition of the software lifecycle to align procurement, operations, and security planning. Which description best captures the software lifecycle from a security management standpoint?", "options": {"A": "Install software once and avoid changes to preserve stability", "B": "Focus only on development practices and treat deployment and retirement as separate disciplines", "C": "Purchase software, renew licenses annually, and ignore versioning unless an outage occurs", "D": "Acquire or develop, deploy, maintain and patch, then decommission while tracking versions and support status throughout"}, "correct": "D"}, {"question": "During a routine audit, a security analyst discovers that multiple root login attempts have been made on the company's Linux servers using SSH. What would be an effective mitigation strategy?", "options": {"A": "Changing the default SSH port from 22 to 23", "B": "Implementing Account Lockout Thresholds", "C": "Using Public Key Infrastructure (PKI) for authentication", "D": "Disabling SSH on the network"}, "correct": "C"}, {"question": "As the Chief Information Security Officer (CISO) of a large corporation, you're consulting with your technical teams to choose the best encryption method for the company's new proprietary communication system. As the system will handle sensitive information, you need an encryption mechanism that provides confidentiality, non-repudiation, and authenticity. The teams are divided between various asymmetric encryption methods, including RSA, and those based on discrete logarithms. Given the corporation's need for confidentiality, non-repudiation, and authenticity, which process should be employed in using public and private keys for secure communications?", "options": {"A": "Messages should be signed and encrypted using the sender's private key.", "B": "Messages should be signed using the sender's private key and encrypted using the recipient's public key.", "C": "Messages should be signed using the recipient's private key and encrypted using the sender's public key.", "D": "Messages should be signed using the sender's public key and encrypted using the recipient's private key."}, "correct": "B"}, {"question": "A developer provisions a new virtual server through a cloud portal during a weekend maintenance window without contacting IT support. Which cloud computing characteristic is being demonstrated most directly?", "options": {"A": "Measured Service", "B": "Resource Pooling", "C": "Broad Network Access", "D": "On-Demand Self-Service"}, "correct": "D"}, {"question": "Which of the following is the MOST effective at preventing unauthorized access to a host?", "options": {"A": "An Intrusion Detection System (IDS)", "B": "A host-based firewall", "C": "A Virtual Private Network (VPN)", "D": "A network-based firewall"}, "correct": "B"}, {"question": "You are a senior IT Manager responsible for the overall Disaster Recovery Plan (DRP) in a large financial institution. To ensure the plan's robustness, you've decided to conduct a series of tests and assessments to confirm the comprehensiveness and effectiveness of the plan. What sequence of tests and assessments should be conducted to ensure the Disaster Recovery Plan (DRP)'s effectiveness?", "options": {"A": "Walk-through -> Review -> Checklist", "B": "Review -> Checklist -> Walk-through", "C": "Checklist -> Walk-through -> Review", "D": "Checklist -> Review -> Walk-through"}, "correct": "B"}, {"question": "A DevOps team is designing access for a new application. Which assignment best aligns with separation of duties between developer, deployer, and administrator?", "options": {"A": "Developers deploy to production, and deployers only monitor logs after release", "B": "Deployers can approve their own change tickets if the change is low risk", "C": "Administrators manage production access and configurations, deployers release approved builds, and developers commit code without production write access", "D": "Developers have production database administrator rights, while administrators handle code merges"}, "correct": "C"}, {"question": "You are the Chief Information Security Officer (CISO) for a large e-commerce company. As part of your responsibilities, you are reassessing the company's Disaster Recovery Plan (DRP). You've ensured the IT systems and data can be fully recovered within 12 hours following a disaster. But, the company's supply chain relies heavily on a single local supplier. You are considering the addition of a secondary supplier who will handle about 5% of the business initially but can scale up if the primary vendor is unable to operate. What is the most critical reason to include a secondary supplier in your Disaster Recovery strategy?", "options": {"A": "To prevent the primary vendor from exploiting a monopoly situation.", "B": "To ensure your company is not overly reliant on a single supplier.", "C": "To build a competitive environment that could potentially lead to better pricing.", "D": "To minimize the risk of your supply chain being disrupted during a disaster."}, "correct": "D"}, {"question": "A cybersecurity analyst receives reports of incessant phishing attempts targeting the organization's employees. Which control is most effective in mitigating this risk?", "options": {"A": "Implementing a web application firewall to block phishing domains", "B": "Deploying endpoint detection and response software", "C": "Conducting regular security awareness training sessions for employees", "D": "Using biometric authentication for user logins"}, "correct": "C"}, {"question": "Which of the following is the PRIMARY indicator of a successful security Incident Response Plan (IRP)?", "options": {"A": "The level of damage caused to the organization's reputation", "B": "The amount of data lost or stolen", "C": "The time it takes to contain the incident", "D": "The number of individuals affected by the incident"}, "correct": "C"}, {"question": "During a routine security audit, a security officer finds that several devices on the network have outdated firmware. What is the most effective action to ensure these devices do not pose a security risk?", "options": {"A": "Install host-based firewalls on the devices", "B": "Schedule regular updates and patch management", "C": "Conduct vulnerability scans more frequently", "D": "Isolate the devices on a separate network"}, "correct": "B"}, {"question": "Which of the following is NOT a characteristic of Software as a Service (SaaS)?", "options": {"A": "The provider is responsible for maintaining the software", "B": "The user pays for the software on a subscription basis", "C": "The software is accessed through the internet", "D": "The user has full control over the software"}, "correct": "D"}, {"question": "When setting up a new wireless network, a security administrator wants to ensure the highest level of encryption to protect transmitted data. Which wireless security protocol should be chosen?", "options": {"A": "WPA", "B": "WPA2", "C": "WPA3", "D": "WEP"}, "correct": "C"}, {"question": "What is the FIRST type of network hardware that should be implemented in a secure network?", "options": {"A": "Firewall", "B": "Router", "C": "Switch", "D": "Hub"}, "correct": "A"}, {"question": "What is the main advantage of implementing cloud-based DDoS protection for enterprise applications?", "options": {"A": "Enhanced protection at the perimeter of the enterprise network", "B": "Scalable resources to handle large volumes of attack traffic", "C": "Localized response to threats, minimizing latency", "D": "Reduced data transfer costs due to local deployment"}, "correct": "B"}, {"question": "Which of the following is the MOST effective method for identifying and authenticating users in a network?", "options": {"A": "Using security tokens with rotating numbers", "B": "Using biometric data such as fingerprints or iris scans", "C": "Using usernames and passwords", "D": "Using IP addresses to track user activity"}, "correct": "B"}, {"question": "Which of the following is the MOST effective compensating control for a system that lacks encryption?", "options": {"A": "Implementing access controls", "B": "Providing user training", "C": "Conducting regular security audits", "D": "Installing firewalls"}, "correct": "A"}, {"question": "A company is experiencing frequent phishing attacks targeting its employees. What is the most effective approach to reduce the likelihood of successful phishing attacks?", "options": {"A": "Install antivirus software on all company devices", "B": "Conduct regular security awareness training for employees", "C": "Enforce a strict password policy requiring complex passwords", "D": "Implement a spam filtering system to block phishing emails"}, "correct": "B"}, {"question": "A finance manager wants to understand why the monthly cloud invoice varies and asks what mechanism allows the provider to charge based on actual consumption. Which cloud characteristic most directly supports usage based billing?", "options": {"A": "Resource Pooling", "B": "Broad Network Access", "C": "Measured Service", "D": "On-Demand Self-Service"}, "correct": "C"}, {"question": "After a security breach exploiting a known vulnerability on five servers, the Incident Response team patches those five servers and removes the malware. They then begin patching the same vulnerability on the remaining 500 servers across the enterprise, even though those systems were not compromised. What is the phase where the team patches the remaining 500 servers called?", "options": {"A": "Remediation", "B": "Mitigation", "C": "Preparation", "D": "Recovery"}, "correct": "A"}, {"question": "What is an effective method for preventing shoulder surfing in an open office environment where sensitive information is frequently displayed on computer screens?", "options": {"A": "Using privacy filters on monitors", "B": "Restricting access to the office during business hours", "C": "Implementing antivirus software on all workstations", "D": "Installing surveillance cameras in the office"}, "correct": "A"}, {"question": "ThorTeaches.com has recently experienced a data breach, and you want to implement stronger measures to protect sensitive information. What is the MOST effective way to manage user access and privileges within an organization?", "options": {"A": "Using a centralized authentication system", "B": "Regularly rotating passwords", "C": "Implementing a strict password policy", "D": "Conducting regular security audits"}, "correct": "A"}, {"question": "An organization wants to manage user permissions and access more effectively across multiple services and systems. Which technology should it consider implementing?", "options": {"A": "Network Access Control (NAC)", "B": "Intrusion Detection System (IDS)", "C": "Two-Factor Authentication (2FA)", "D": "Single Sign-On (SSO)"}, "correct": "D"}, {"question": "What is the MOST likely cause of a generator failure in a major data center?", "options": {"A": "Natural disaster", "B": "Cyberattack", "C": "Technical malfunction", "D": "Human error during maintenance"}, "correct": "C"}, {"question": "An organization is deploying a new virtualized environment. How can it best ensure the security of the Virtual Machines (VMs) against unauthorized access?", "options": {"A": "Install host-based firewalls on all VMs", "B": "Implement Multi-Factor Authentication (MFA) for VM management platforms", "C": "Utilize strong password policies across VM hosts", "D": "Use network segmentation to isolate VMs"}, "correct": "B"}, {"question": "What is a key difference between symmetric and asymmetric encryption methods in terms of performance?", "options": {"A": "Symmetric encryption provides stronger protection than asymmetric encryption", "B": "Asymmetric encryption scales better for large data volumes", "C": "Symmetric encryption uses more complex algorithms, making it slower", "D": "Symmetric encryption is generally faster due to simpler algorithms"}, "correct": "D"}, {"question": "Which of the following is the MOST effective approach to implementing Role-Based Access Control (RBAC) in a large organization?", "options": {"A": "Implementing a single, global role for all employees", "B": "Using a hierarchical approach to role assignment based on an individual's position in the organizational structure", "C": "Developing a set of roles based on the tasks and functions performed by individuals within the organization", "D": "Assigning roles to individuals based on their job titles"}, "correct": "C"}, {"question": "A company is considering moving its critical applications to a Cloud Service Provider (CSP). What is the most important factor to ensure security during this transition?", "options": {"A": "Cost savings associated with cloud migration", "B": "The cloud provider's reputation in the industry", "C": "The geographic location of the cloud provider's data centers", "D": "The cloud provider's compliance with relevant regulations"}, "correct": "D"}, {"question": "As the newly appointed Chief Information Security Officer (CISO) for a rapidly growing organization, you are assessing your company's susceptibility to social engineering attacks. The recent report shows there have been numerous instances of potential spear-phishing attempts against your employees. And there are reports of employees receiving calls from individuals posing as IT helpdesk representatives asking for their login credentials. What is the most effective strategy to reduce the risk of employees falling for such social engineering attacks in the future?", "options": {"A": "Encourage employees to report any suspicious emails or calls to the IT department.", "B": "Implement a Multi-Factor Authentication (MFA) system for all employees.", "C": "Install a high-quality, enterprise-grade spam filter to catch phishing emails.", "D": "Conduct regular, comprehensive cybersecurity awareness and training programs, including social engineering simulations."}, "correct": "D"}, {"question": "An organization recently experienced a data breach due to unauthorized access. Which control would most effectively prevent this type of incident in the future?", "options": {"A": "Enhancing perimeter network defenses", "B": "Increasing the frequency of security audits", "C": "Conducting regular security awareness training", "D": "Implementing Role-Based Access Control (RBAC)"}, "correct": "D"}, {"question": "Which of the following is the MOST important aspect of nonrepudiation in a network security system?", "options": {"A": "Ensuring that data cannot be accessed without authorization", "B": "Ensuring that the sender of a message cannot deny having sent it", "C": "Ensuring that data cannot be modified without detection", "D": "Ensuring that the receiver of a message cannot deny having received it"}, "correct": "B"}, {"question": "Which security control is the LEAST effective in preventing unauthorized access to sensitive information?", "options": {"A": "Implementing firewalls", "B": "Encrypting data", "C": "Training employees on security policies", "D": "Installing antivirus software"}, "correct": "D"}, {"question": "An organization has suffered multiple phishing attacks targeting its employees. Which of the following strategies would most effectively mitigate this risk?", "options": {"A": "Deploying an antivirus solution on all devices", "B": "Conducting phishing simulation exercises", "C": "Using two-factor authentication", "D": "Implementing network segmentation"}, "correct": "B"}, {"question": "As the IT Security Manager in your organization, you have need to convince the Chief Financial Officer (CFO) to approve a budget increase for the IT security department. This budget increase would allow the implementation of a new Security Information and Event Management (SIEM) system. You believe that the adoption of this system will enhance your organization's overall security posture and potentially lead to financial savings in the long run due to reduced incident response times and prevention of costly breaches. What is the most persuasive argument to present to the CFO to gain approval for this budget increase?", "options": {"A": "The SIEM system will improve the organization's reputation by demonstrating a proactive approach to security.", "B": "The SIEM system will help the organization stay compliant with the necessary regulations, potentially avoiding fines.", "C": "The SIEM system will enhance the efficiency of the IT security team, allowing them to respond to incidents more quickly, thereby reducing potential loss from security incidents.", "D": "The SIEM system is the latest technology in security, and not having it may put the organization at a disadvantage compared to competitors."}, "correct": "C"}, {"question": "Which of the following practices is essential in preventing the spread of ransomware within an organization's network?", "options": {"A": "Conduct phishing awareness training for employees", "B": "Utilize network segmentation", "C": "Regularly patch and update systems", "D": "Implement strict perimeter firewall rules"}, "correct": "B"}, {"question": "An employee reports receiving an email from an unknown source requesting personal information. What type of threat is this most likely an example of?", "options": {"A": "Scareware", "B": "Phishing", "C": "Pretexting", "D": "Spear phishing"}, "correct": "B"}, {"question": "In our access control implementations, we want to ensure the accountability of our users. Which of these could be something we could use for that?", "options": {"A": "Their username.", "B": "Role-Based Access Control (RBAC).", "C": "Non-repudiation.", "D": "A password."}, "correct": "C"}, {"question": "Which of the following is NOT a characteristic of effective compartmentalization in an organization?", "options": {"A": "Access to sensitive information is restricted to only those who need it", "B": "Clear boundaries between departments and roles", "C": "Lack of communication between departments", "D": "Permissions granted to individuals based on their job function"}, "correct": "C"}, {"question": "How does a security officer evaluate the security posture of an organization?", "options": {"A": "By implementing strict access controls", "B": "By implementing a security awareness program", "C": "By implementing a comprehensive security policy", "D": "By conducting regular vulnerability assessments"}, "correct": "D"}, {"question": "An organization wants to limit the damage from a potential insider threat. Which of the following practices should they adopt?", "options": {"A": "Increase network bandwidth", "B": "Consolidate servers into a single data center", "C": "Implement Role-Based Access Control (RBAC)", "D": "Enhance physical security measures"}, "correct": "C"}, {"question": "The company has 500 employees, with about 50% working remotely. The company's IT infrastructure includes servers, workstations, and laptops. The company has experienced multiple data breaches in the past year, with the most recent one being a ransomware attack that encrypted all of the company's data. The company has limited resources and budget for IT security improvements. We are making our procedures on the proper use and disposal of SSD drives. Which type of drives which are they?", "options": {"A": "Magnetic drives", "B": "Hybrid drives", "C": "Solid-State drives", "D": "Optical drives"}, "correct": "C"}, {"question": "During a security audit, an organization discovers that employees are frequently accessing inappropriate websites. Which mechanism can help the organization control and monitor web traffic effectively?", "options": {"A": "Enforcing strict password policies for internet access", "B": "Conducting regular employee training programs on acceptable use", "C": "Implementing a firewall with content filtering capabilities", "D": "Deploying an Intrusion Detection System (IDS)"}, "correct": "C"}, {"question": "We have an employee who is moving from IT to HR. If we are using Role-Based Access Control (RBAC), what would we do to his access?", "options": {"A": "Leave his access as is", "B": "Remove his access completely", "C": "Change his access to IT-specific access", "D": "Change his access to HR-specific access"}, "correct": "D"}, {"question": "A company uses dual control for wire transfers above a set amount. An employee suggests that one person can approve on behalf of the other when the second approver is on vacation, as long as it is documented. What is the best response from a security perspective?", "options": {"A": "Accept the approach because documentation provides sufficient accountability", "B": "Permit it if the transaction is reviewed by finance at the end of the week", "C": "Reject it because dual control requires independent participation, so a backup approver should be assigned instead", "D": "Allow it only if the employee uses a shared team account for approvals"}, "correct": "C"}, {"question": "Which of the following encryption methods is primarily used to protect data at rest?", "options": {"A": "AES", "B": "IPSec", "C": "SSL/TLS", "D": "PGP"}, "correct": "A"}]};
+    let currentSetNum = 1;
+    let currentQuestions = [];
+    let currentIndex = 0;
+    
+    // Store user answers array to calculate at the end
+    // Format: { questionData, selected }
+    let userAnswers = [];
+    let selectedAnswer = null;
+
+    // Helper function to shuffle an array
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
         }
+        return array;
+    }
 
-        function selectProject(id) {
-            currentSelectedId = id;
-            renderEngine();
+    function loadSet(setNum) {
+        document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+        event?.target?.classList.add('active');
+        if(!event) {
+            document.querySelectorAll('.nav-link')[setNum-1].classList.add('active');
         }
+        
+        currentSetNum = setNum;
+        
+        // Deep copy and shuffle questions
+        let questionsToLoad = JSON.parse(JSON.stringify(rawExamData['set' + setNum]));
+        currentQuestions = shuffleArray(questionsToLoad);
+        
+        currentIndex = 0;
+        userAnswers = [];
+        
+        document.getElementById('summary-view').style.display = 'none';
+        document.getElementById('question-view').style.display = 'block';
+        document.getElementById('module-indicator').innerHTML = `<i class="fas fa-layer-group me-2"></i> Module ${setNum}`;
+        
+        renderQuestion();
+    }
+    
+    function loadNextSet() {
+        let nextSet = currentSetNum === 3 ? 1 : currentSetNum + 1;
+        loadSet(nextSet);
+        window.scrollTo(0,0);
+    }
 
-        function renderInspector() {
-            const contentBox = document.getElementById('inspectorContent');
-            const actionBox = document.getElementById('inspectorActionContainer');
-            const p = projects.find(item => item.id === currentSelectedId);
-
-            if (!p) return;
-
-            contentBox.innerHTML = `
-                <div class="detail-group">
-                    <span class="detail-label">Project Designation</span>
-                    <div class="detail-value" style="color: var(--accent-brand); font-weight: 600;">${p.name}</div>
-                </div>
-                <div class="detail-row-2col">
-                    <div class="detail-group">
-                        <span class="detail-label">Geographic Zone</span>
-                        <div class="detail-value">${p.zone}</div>
-                    </div>
-                    <div class="detail-group">
-                        <span class="detail-label">Appropriated Budget</span>
-                        <div class="detail-value" style="font-family: monospace;">${p.budget}</div>
-                    </div>
-                </div>
-                <div class="detail-group">
-                    <span class="detail-label">Independent Auditor / Validator</span>
-                    <div class="detail-value" style="color: #cbd5e1;">${p.auditor}</div>
-                </div>
-                <div class="detail-group">
-                    <span class="detail-label">Pipeline Status</span>
-                    <div class="detail-value" style="color: var(--status-warning); border-color: var(--status-warning-bg); font-weight: 600;">${p.statusText}</div>
-                </div>
-                <div class="detail-group">
-                    <span class="detail-label">Structural Vulnerability Profile</span>
-                    <div class="detail-value" style="font-size: 0.875rem; line-height: 1.4; display:block;">${p.needs}</div>
+    function renderQuestion() {
+        const q = currentQuestions[currentIndex];
+        selectedAnswer = null;
+        
+        document.getElementById('question-counter').innerHTML = `Q: ${currentIndex + 1} / ${currentQuestions.length}`;
+        const progressPercent = (currentIndex / currentQuestions.length) * 100;
+        document.getElementById('progress-bar').style.width = progressPercent + '%';
+        
+        document.getElementById('question-text').innerText = q.question;
+        
+        const optsContainer = document.getElementById('options-container');
+        optsContainer.innerHTML = '';
+        for (const [key, val] of Object.entries(q.options)) {
+            optsContainer.innerHTML += `
+                <div id="opt_${key}" class="option-block" onclick="selectOption('${key}')">
+                    <div class="option-letter">${key}</div>
+                    <div class="option-text">${val}</div>
                 </div>
             `;
-
-            if (p.statusCategory === 'investigating') {
-                actionBox.innerHTML = `
-                    <div class="action-area">
-                        <button class="btn btn-primary" onclick="transitionStatus(${p.id}, 'validating', 'AUTHORIZATION REQUIRED: Initiate parallel validation? This unfreezes active construction for \\n\\n[ ${p.name} ]\\n\\nwhile simultaneously engaging ${p.auditor}.')">
-                            Initiate Parallel Validation Protocol
-                        </button>
-                    </div>
-                `;
-            } else if (p.statusCategory === 'validating') {
-                actionBox.innerHTML = `
-                    <div class="action-area">
-                        <button class="btn btn-success" onclick="transitionStatus(${p.id}, 'cleared', 'AUTHORIZATION REQUIRED: Ensure ${p.auditor} has signed off on the integrity parameters for \\n\\n[ ${p.name} ].\\n\\nMark as fully cleared and operational?')">
-                            Mark Cleared & Active
-                        </button>
-                    </div>
-                `;
-            } else {
-                actionBox.innerHTML = `
-                    <div class="action-area" style="text-align: center; color: var(--status-success); font-size: 0.875rem; font-weight: 600;">
-                        ✓ Protocol fully cleared. Separation of Duties validated.
-                    </div>
-                `;
-            }
         }
+        
+        document.getElementById('btn-next').disabled = true;
+        
+        const cardBody = document.getElementById('card-body-content');
+        cardBody.classList.remove('fade-transition');
+        void cardBody.offsetWidth; // trigger reflow
+        cardBody.classList.add('fade-transition');
+    }
 
-        function renderMatrix() {
-            const tbody = document.getElementById('matrixTableBody');
-            tbody.innerHTML = '';
+    function selectOption(key) {
+        selectedAnswer = key;
+        
+        document.querySelectorAll('.option-block').forEach(el => {
+            el.classList.remove('selected');
+        });
+        document.getElementById('opt_' + key).classList.add('selected');
+        
+        // Enable Next button
+        document.getElementById('btn-next').disabled = false;
+    }
+
+    function nextQuestion() {
+        if (!selectedAnswer) return;
+        
+        // Save user's answer
+        userAnswers.push({
+            questionData: currentQuestions[currentIndex],
+            selected: selectedAnswer
+        });
+
+        currentIndex++;
+        if (currentIndex >= currentQuestions.length) {
+            showSummary();
+        } else {
+            renderQuestion();
+        }
+    }
+    
+    function showSummary() {
+        // Ensure progress bar fills up
+        document.getElementById('progress-bar').style.width = '100%';
+        
+        document.getElementById('question-view').style.display = 'none';
+        document.getElementById('summary-view').style.display = 'block';
+        
+        let score = 0;
+        let reviewHtml = '';
+        
+        userAnswers.forEach((ans, idx) => {
+            const qData = ans.questionData;
+            const isCorrect = ans.selected === qData.correct;
+            if(isCorrect) score++;
             
-            const sortedProjects = [...projects].sort((a,b) => {
-                const riskVal = { "Critical": 3, "High": 2, "Moderate": 1 };
-                return riskVal[b.risk] - riskVal[a.risk];
-            });
-
-            sortedProjects.forEach(p => {
-                const pillClass = p.risk === 'Critical' ? 'risk-critical' : (p.risk === 'High' ? 'risk-high' : 'risk-moderate');
-                tbody.innerHTML += `
-                    <tr>
-                        <td><span class="risk-badge ${pillClass}">${p.risk} Hazard</span></td>
-                        <td>
-                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">${p.name}</div>
-                            <div style="font-size: 0.75rem; color: var(--text-tertiary);">${p.zone}</div>
-                        </td>
-                        <td class="metric-highlight">${p.population || "TBD"}</td>
-                        <td class="metric-money">${p.economicLoss || "TBD"}</td>
-                        <td style="color: var(--text-secondary); max-width: 450px; font-size: 0.8rem;">${p.needs}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        function renderAuditLogs() {
-            const container = document.getElementById('auditTimelineContainer');
-            container.innerHTML = '';
-
-            [...auditLogs].reverse().forEach(log => {
-                container.innerHTML += `
-                    <div class="log-entry ${log.type}">
-                        <div class="log-meta-col">
-                            <span class="log-time">${log.time}</span>
-                            <span class="log-hash">${log.hash}</span>
-                            <span class="log-auth">${log.auth}</span>
-                        </div>
-                        <div class="log-details">
-                            <div class="log-action">${log.action}</div>
-                            <div class="log-desc">${log.meta}</div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function transitionStatus(id, targetCategory, confirmMsg) {
-            if (!window.confirm(confirmMsg)) return;
-
-            const p = projects.find(item => item.id === id);
-            if (p) {
-                if (targetCategory === 'validating') {
-                    p.statusCategory = 'validating';
-                    p.statusText = 'Simultaneous Engineering Audit Active';
-                    
-                    auditLogs.push({
-                        time: getTimestamp(),
-                        hash: generateHash(),
-                        auth: "EXECUTIVE DIRECTIVE",
-                        type: "warning",
-                        action: "Parallel Validation Overridden",
-                        meta: `Gridlock bypassed for "${p.name}". Assumed continuous operations under oversight of ${p.auditor}.`
-                    });
-
-                } else if (targetCategory === 'cleared') {
-                    p.statusCategory = 'cleared';
-                    p.statusText = 'Cleared for Active Construction';
-                    
-                    auditLogs.push({
-                        time: getTimestamp(),
-                        hash: generateHash(),
-                        auth: p.auditor.toUpperCase(),
-                        type: "success",
-                        action: "Third-Party Clearance Granted",
-                        meta: `Independent verification finalized for "${p.name}". Absolute operational continuity restored without anomalies.`
-                    });
-                }
-                renderEngine();
-            }
-        }
-
-        function registerProject() {
-            const name = document.getElementById('newName').value.trim();
-            const zone = document.getElementById('newZone').value.trim();
-            const risk = document.getElementById('newRisk').value;
-            const budget = document.getElementById('newBudget').value.trim() || "₱0.00";
-            const needs = document.getElementById('newNeeds').value.trim();
-
-            if (!name || !needs) {
-                alert('Form Error: Designation and Vulnerability Profile fields are mandatory.');
-                return;
-            }
-
-            if (!window.confirm(`Are you certain you want to deploy "${name}" into the Project Uptime matrix? This action is immutable.`)) return;
-
-            const newId = projects.length > 0 ? Math.max(...projects.map(p => p.id)) + 1 : 1;
-
-            projects.push({
-                id: newId,
-                name,
-                zone: zone || "Unassigned Sector",
-                risk,
-                budget,
-                auditor: "Woodfields Consultants Inc. (Auto-Assigned)",
-                statusCategory: "investigating",
-                statusText: "Awaiting Framework Integration",
-                needs,
-                population: "Awaiting Data",
-                economicLoss: "Awaiting Data"
-            });
-
-            auditLogs.push({
-                time: getTimestamp(),
-                hash: generateHash(),
-                auth: "DPWH ADMIN",
-                type: "warning",
-                action: "New Infrastructure Protocol Deployed",
-                meta: `Project "${name}" injected into the Continuity Engine. Initially halted under ${risk} risk status pending third-party override.`
-            });
-
-            currentSelectedId = newId;
-            renderEngine();
-
-            document.getElementById('newName').value = '';
-            document.getElementById('newZone').value = '';
-            document.getElementById('newBudget').value = '';
-            document.getElementById('newNeeds').value = '';
+            const userChoiceText = qData.options[ans.selected];
+            const correctChoiceText = qData.options[qData.correct];
             
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+            reviewHtml += `
+                <div class="review-item">
+                    <div class="review-question">${idx + 1}. ${qData.question}</div>
+                    <div class="d-flex flex-column gap-2 mt-3">
+                        ${isCorrect 
+                            ? `<div class="review-badge correct m-0"><i class="fas fa-check-circle fs-5"></i><span><strong>Your Answer:</strong> ${ans.selected} - ${userChoiceText}</span></div>` 
+                            : `<div class="review-badge wrong m-0"><i class="fas fa-times-circle fs-5"></i><span><strong>Your Answer:</strong> ${ans.selected} - ${userChoiceText}</span></div>
+                               <div class="review-badge correct m-0"><i class="fas fa-check-circle fs-5"></i><span><strong>Correct Answer:</strong> ${qData.correct} - ${correctChoiceText}</span></div>`
+                        }
+                    </div>
+                </div>
+            `;
+        });
+        
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('final-total').innerText = currentQuestions.length;
+        document.getElementById('review-container').innerHTML = reviewHtml;
+    }
 
-        // Init
-        renderEngine();
-    </script>
+    // Initialize first set
+    window.onload = () => loadSet(1);
+</script>
 </body>
 </html>
